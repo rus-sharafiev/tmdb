@@ -1,0 +1,53 @@
+{
+    "name": "TMDB на русском",
+    "short_name": "RU TMDB",
+    "start_url": "/?source=pwa",
+    "display": "standalone",
+    "icons": [
+      {
+        "type": "image/png",
+        "sizes": "192x192",
+        "src": "/IMG/ICONS/logo-192.png"
+      },
+      {
+        "type": "image/png",
+        "sizes": "48x48",
+        "src": "/IMG/ICONS/logo-48.png"
+      },
+      {
+        "type": "image/png",
+        "sizes": "72x72",
+        "src": "/IMG/ICONS/logo-72.png"
+      },
+      {
+        "type": "image/png",
+        "sizes": "128x128",
+        "src": "/IMG/ICONS/logo-128.png"
+      },
+      {
+        "type": "image/png",
+        "sizes": "384x384",
+        "src": "/IMG/ICONS/logo-384.png"
+      },
+      {
+        "type": "image/png",
+        "sizes": "512x512",
+        "src": "/IMG/ICONS/logo-512.png"
+      },
+      {
+        "type": "image/png",
+        "sizes": "96x96",
+        "src": "/IMG/ICONS/logo-96.png"
+      },
+      {
+        "type": "image/png",
+        "sizes": "1024x1024",
+        "src": "/IMG/ICONS/maskable-1024.png",
+        "purpose": "maskable"
+      }
+    ],
+    "theme_color": "#0d253f",
+    "background_color": "#0d253f",
+    "description": "Каталог фильмов и сериалов TMDB на русском языке",
+    "categories": ["Entertainment", "Movies", "TVs"]
+  }

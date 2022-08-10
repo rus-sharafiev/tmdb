@@ -1,0 +1,14 @@
+@media only screen and (max-device-width: 736px) and (-webkit-min-device-pixel-ratio: 2) {
+    body {
+        background: var(--md-sys-color-background);
+
+        display: grid;
+        grid: 50px 1fr 0px 80px / 1fr;
+        grid-template-areas:
+        "h"
+        "m"
+        "f"
+        "n";
+        justify-content: flex-start;
+    }
+}
