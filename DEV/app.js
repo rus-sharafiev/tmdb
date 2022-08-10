@@ -1,5 +1,5 @@
 // import {Workbox} from 'workbox-window';
-import * as load from '/DEV/load-modules.js';
+import * as load from '/DEV/modules.js';
 
 // if ('serviceWorker' in navigator) {
 //     const wb = new Workbox('/sw.js');
