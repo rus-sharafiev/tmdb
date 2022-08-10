@@ -667,20 +667,6 @@ export const showPerson = async (id) => {
   content.map((el) => { if (el) main.append(el) });
 }
 
-const discover = async () => {
-  
-}
 // Browser history   
 // history.pushState( btn, '', btn );     
 // window.onpopstate = () => { loadMain(history.state); };
-
-// (async () => {
-//   const response = await fetch(`https://api.themoviedb.org/3/configuration`, {
-//     headers: {
-//       "content-type": "application/json;charset=utf-8",
-//       "authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjMGNkMTdmMmViZTE5YjU1MzcyZGU5OWRmZDRjN2U2MyIsInN1YiI6IjYxYTFlY2I1ODVjMGEyMDAyMTZhMmNmNiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.piWlR1D4Kg74aq5Lt1F7Mh73CqUSFUkfOOLwV3Asi6Q"
-//     }
-//   });
-//   const data = await response.json();
-//   console.log(data);
-// })();
