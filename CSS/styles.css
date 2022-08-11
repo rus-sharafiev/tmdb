@@ -321,7 +321,7 @@ nav.menu-open > div.nav-active:after {
 .filters {
     width: 230px;
     border-top: thin solid rgba(var(--md-sys-color-primary--rgb), 0.1);
-    margin: 15vh -5px 0;
+    margin: 5vh -5px 0;
     padding: 0 5px;
     display: flex;
     flex-direction: column;
@@ -330,10 +330,24 @@ nav.menu-open > div.nav-active:after {
 }
 .filters::before {
     content: 'Подбор по параметрам';
-    margin: 15px 0 30px;
+    margin: 15px 0;
     font-size: 20px;
 }
-#sort-container {
+.filters > div > label {
+    font-size: 14px;
+    font-weight: 300;
+    width: 30px;
+    margin: 8px 0 0 8px;
+    color: rgba(var(--md-sys-color-outline--rgb), 0.6);
+    z-index: 1;
+}
+.filters > div > input::placeholder {
+    color: rgba(var(--md-sys-color-outline--rgb), 0.3);
+}
+.sort-container,
+.votes-container,
+.rating-container {
+    margin: 15px 0;
     padding: 3px;
     border-radius: 8px;
     border: thin solid rgba(var(--md-sys-color-primary--rgb), 0.1);
@@ -341,8 +355,9 @@ nav.menu-open > div.nav-active:after {
     flex-direction: column;
     gap: 3px;
 }
-#sort-container::before {
-    content: 'Сортировать';
+.votes-container::before,
+.sort-container::before,
+.rating-container::before {
     margin: -12px 5px 3px;
     padding: 0 3px;
     width: max-content;
@@ -353,18 +368,42 @@ nav.menu-open > div.nav-active:after {
     rgba(var(--md-sys-color-primary--rgb), 0.05)), 
     var(--md-sys-color-background);
 }
+.sort-container::before {
+    content: 'Сортировать';
+}
+.rating-container::before {
+    content: 'Рейтинг';
+}
+.votes-container::before {
+    content: 'Количество голосов';
+}
 #filters-sort,
-#filters-order {
+#filters-order,
+#max-rating,
+#min-rating,
+#max-votes,
+#min-votes {
     outline: none;
     height: 30px;
-    padding: 5px;
+    padding: 0 5px;
     border-radius: 5px;
     border: thin solid rgba(var(--md-sys-color-outline--rgb), 0.05);
     background: rgba(var(--md-sys-color-surface--rgb), 0.5);
     transition: all 0.2s cubic-bezier(0.19, 1, 0.22, 1);
 }
+#max-rating,
+#min-rating,
+#max-votes,
+#min-votes {
+    padding-left: 40px;
+    margin-top: -23px;
+}
 #filters-sort:hover,
-#filters-order:hover {
+#filters-order:hover,
+#max-votes:hover,
+#min-votes:hover,
+#max-rating:hover,
+#min-rating:hover {
     cursor: pointer;
     background: var(--md-sys-color-surface);
 }
@@ -402,6 +441,10 @@ nav.menu-open > div.nav-active:after {
     rgba(var(--md-sys-color-tertiary--rgb), 0.5),
     rgba(var(--md-sys-color-secondary--rgb), 0.5)),
         var(--md-sys-color-surface);
+}
+#max-votes,
+#min-votes {
+
 }
 /* Main ---------------------------------------------------------- */
 main {

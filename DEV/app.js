@@ -59,7 +59,7 @@ const createHeader = async () => {
 
     const searchFormInput = document.createElement('input');
       searchFormInput.id = 'query'; 
-      searchFormInput.type = 'text'; 
+      searchFormInput.type = 'search'; 
       searchFormInput.name = 'query';
       searchFormInput.required = true;
       searchFormInput.onkeyup = () => {
@@ -307,12 +307,6 @@ const searchMedia = async (query, year, type, page) => {
           searchMedia(query, year, type, nextpage);
         }  
       }
-
-      loadMore.onclick = () => {
-        loadMore.innerHTML = '<div class="lds-default"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>';
-        let nextpage = page + 1;
-        searchMedia(query, year, type, nextpage);
-      }    
     }
   }
 }
@@ -361,21 +355,29 @@ const personMenuList = async () => {
 export const showList = async (a, type, list, page) => {
   let sort = document.getElementById('filters-sort');
   let order = document.getElementById('filters-order');
+  let minRating = document.getElementById('min-rating'); // vote_average.gte
+  let maxRating = document.getElementById('max-rating'); // vote_average.lte
+  let minVotes = document.getElementById('min-votes'); // vote_count.gte
+  let maxVotes = document.getElementById('max-votes'); // vote_count.lte
+  
   let sortBy = `&sort_by=${sort.value}.${order.value}`;
-
-  let discover_vars = `${sortBy}&vote_count_gte=500`;
+  let discover_vars = sortBy;
+  if (minRating.value) discover_vars = discover_vars.concat(`&vote_average_gte=${minRating.value}`);
+  if (maxRating.value) discover_vars = discover_vars.concat(`&vote_average_lte=${maxRating.value}`);
+  if (minVotes.value) discover_vars = discover_vars.concat(`&vote_count_gte=${minVotes.value}`);
+  if (maxVotes.value) discover_vars = discover_vars.concat(`&vote_count_lte=${maxVotes.value}`);
 
   if (!page) {
     load.fetchAnimation(); main.style.overflow = 'hidden';
     if (a == 'list') var req = `t=${type}&l=${list}`;
-    if (a == 'discover') var req = `t=${type}${discover_vars}`; // &q=
+    if (a == 'discover') var req = `t=${type}${discover_vars}`;
   } else {
     if (a == 'list') var req = `t=${type}&l=${list}&p=${page}`;
     if (a == 'discover') var req = `t=${type}${discover_vars}&page=${page}`;
   }
 
   let response = await fetch(`https://kz.srrlab.ru/${a}/?${req}`);
-  const data = await response.json();    console.log(data);
+  const data = await response.json();    // console.log(data);
 
   if (!page) { main.innerHTML = ''; main.style = null; } else { main.removeChild(document.getElementById('load-more')); }
   main.setAttribute('class', 'search');
@@ -421,12 +423,6 @@ export const showList = async (a, type, list, page) => {
           showList(a, type, list, nextpage);
         }  
       }
-
-      loadMore.onclick = () => {
-        loadMore.innerHTML = '<div class="lds-default"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>';
-        let nextpage = page + 1;
-        showList(a, type, list, nextpage);
-      }    
     }
   }
 }

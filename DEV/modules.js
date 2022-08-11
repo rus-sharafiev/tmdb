@@ -1,5 +1,5 @@
 import '/DEV/vibrant.min.js';
-import { showMovie, showTv, showPerson, showList } from '/DEV/main-dev.js';
+import { showMovie, showTv, showPerson, showList } from '/DEV/app.js';
 
 // Div ------------------------------------------------------------------------------
 export const div = (cls, id, container) => {
@@ -420,7 +420,7 @@ export const filters = async () => {
   let cont = div('filters no-select');
 
   //sort
-  let sortCont = div('', 'sort-container');
+  let sortCont = div('sort-container');
   let sort = document.createElement('select'); 
     sort.id = 'filters-sort';
     sort.onchange = () => btn.classList.add('ready');
@@ -439,14 +439,74 @@ export const filters = async () => {
   });
 
   let order = document.createElement('select'); order.id = 'filters-order';
+  let desc = document.createElement('option'); desc.value = 'desc'; desc.innerHTML = 'по убыванию'; order.append(desc);
     let asc = document.createElement('option'); asc.value = 'asc'; asc.innerHTML = 'по возрастанию'; order.append(asc);
-    let desc = document.createElement('option'); desc.value = 'desc'; desc.innerHTML = 'по убыванию'; order.append(desc);
     order.onchange = () => btn.classList.add('ready');
   
   sortCont.append(sort, order);
 
-  // votes
+  // rating
+  let ratingCont = div('rating-container');
+  let minRating = document.createElement('input');
+    minRating.type = 'number';
+    minRating.id = 'min-rating';
+    minRating.name = 'min_rating';
+    minRating.placeholder = '0';
+    minRating.min = 0; minRating.max = 10;
+    minRating.onchange = () => btn.classList.add('ready');
+  let minRatingLabel = document.createElement('label');
+    minRatingLabel.for = 'min-rating';
+    minRatingLabel.innerHTML = 'min';
+  
+  let maxRating = document.createElement('input');
+    maxRating.type = 'number';
+    maxRating.id = 'max-rating';
+    maxRating.name = 'max_rating';
+    maxRating.placeholder = '10';
+    maxRating.min = 0; maxRating.max = 10;
+    maxRating.onchange = () => btn.classList.add('ready');
+  let maxRatingLabel = document.createElement('label');
+    maxRatingLabel.for = 'max-rating';
+    maxRatingLabel.innerHTML = 'max';
+    
+  ratingCont.append(minRatingLabel, minRating, maxRatingLabel, maxRating); 
 
+  // votes
+  let votesCont = div('votes-container');
+  let minVotes = document.createElement('input');
+    minVotes.type = 'number';
+    minVotes.id = 'min-votes';
+    minVotes.name = 'min_votes';
+    minVotes.placeholder = '0';
+    minVotes.min = 0; minVotes.max = 100000;
+    minVotes.onchange = () => btn.classList.add('ready');
+  let minVotesLabel = document.createElement('label');
+    minVotesLabel.for = 'min-votes';
+    minVotesLabel.innerHTML = 'min';
+  
+  let maxVotes = document.createElement('input');
+    maxVotes.type = 'number';
+    maxVotes.id = 'max-votes';
+    maxVotes.name = 'max_votes';
+    maxVotes.placeholder = '100000';
+    maxVotes.min = 0; maxVotes.max = 100000;
+    maxVotes.onchange = () => btn.classList.add('ready');
+  let maxVotesLabel = document.createElement('label');
+    maxVotesLabel.for = 'max-votes';
+    maxVotesLabel.innerHTML = 'max';
+  
+  votesCont.append(minVotesLabel, minVotes, maxVotesLabel, maxVotes);  
+
+  // year
+  let yearCont = div('year-container');
+  let Year = document.createElement('input');
+    Year.type = 'text';
+    Year.id = 'year';
+    Year.name = 'year';
+    Year.placeholder = 'min';
+  
+    yearCont.append(Year);  
+   
   // submit btn
   let btn = div('', 'filters-submit-btn');
   btn.innerHTML = 'Подобрать';
@@ -455,6 +515,6 @@ export const filters = async () => {
     btn.classList.remove('ready');
   }
 
-  ([sortCont, btn]).map( (el) => cont.append(el));
+  ([sortCont, ratingCont, votesCont, yearCont, btn]).map( (el) => cont.append(el));
   return cont;
 }
