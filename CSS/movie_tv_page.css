@@ -1,0 +1,531 @@
+/* Movie page ----------------------------------------------------------------------------------- */
+.movie {
+    display: grid;
+    grid:   5px 20px 60px 23px 10px 23px 135px 20px 23px 23px 23px 23px 77px 35px 40px 40px 275px 400px /
+            minmax(10px, 1fr) 400px 10px minmax(290px, 4fr) minmax(290px, 4fr) minmax(10px, 1fr);
+    grid-template-areas:
+        '. ...... . ..... ..... .'
+        '. poster . ..... ..... .'
+        '. poster . title title .'
+        '. poster . genres genres .'
+        '. poster . ..... ..... .'
+        '. poster . tagline tagline .'
+        '. poster . overview overview .'
+        '. poster . ....... ....... .'
+        '. poster . revenue revenue .'
+        '. poster . budget budget .'
+        '. poster . status status .'
+        '. poster . release release .'
+        '. poster . ....... ..... .'
+        '. poster . votes ..... .'
+        '. ...... . crew crew .'
+        '. videos . crew crew .'
+        '. videos . actors actors .'
+        '. ...... . ...... ...... .';
+    align-items: start;
+    justify-content: start;
+    gap: 5px;
+
+    color: var(--md-sys-color-on-primary);
+}
+.movie-status { grid-area: status; }
+.movie-budget { grid-area: budget; }
+.movie-revenue { grid-area: revenue; }
+.movie-release-date { grid-area: release; }
+.movie-status { grid-area: status; }
+
+.movie-status,
+.movie-budget, 
+.movie-revenue, 
+.movie-release-date {
+    font-size: 18px;
+    font-weight: 300;
+    display: flex;
+    gap: 10px;
+}
+.movie-status::before {
+    content: 'Статус';
+    font-size: 14px;
+    font-weight: 100;
+}
+.movie-budget::before {
+    content: 'Бюджет';
+    font-size: 14px;
+    font-weight: 100;
+}
+.movie-revenue::before {
+    content: 'Сборы';
+    font-size: 14px;
+    font-weight: 100;
+}
+.movie-release-date::before {
+    content: 'Дата выхода в прокат';
+    font-size: 14px;
+    font-weight: 100;
+    width: 85px;
+    line-height: 0.8;
+    text-align: end;
+}
+.collection-poster {
+    grid-column: 5 / -2;
+    grid-row: 14 / 15;
+    justify-self: end;
+    align-self: end;
+    width: 154px;
+    border-radius: 8px;
+    box-shadow: 0px 1px 2px rgb(0 0 0 / 15%), 
+                0px 1px 3px 1px rgb(0 0 0 / 15%);
+}
+.collection-name {
+    grid-column: 4 / -2;
+    grid-row: 14 / 15;
+    margin: 0 165px 0 0;
+    justify-self: end;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 0.8;
+    color: var(--md-sys-color-on-surface);
+    width: 330px;
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    text-align: end;
+}
+.videos-container {
+    grid-area: videos;
+    height: 300px;
+    overflow-x: hidden;
+    margin: 20px 0 0;
+    padding: 10px 10px 5px;
+    background: rgba(var(--md-sys-color-surface--rgb), 0.5);
+    border-radius: 10px;
+    box-shadow: 0px 1px 2px rgb(0 0 0 / 15%), 
+                0px 1px 3px 1px rgb(0 0 0 / 15%);
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.videos-container::before {
+    content: 'Трейлеры | Видео';
+    color: var(--md-sys-color-on-surface);
+    font-size: 20px;
+    font-weight: 600;
+    width: 400px;
+}
+.video {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.video-name {
+    color: var(--md-sys-color-on-surface);
+    font-size: 13px;
+    font-weight: 200;
+    line-height: 0.9;
+    width: 380px;
+    height: 28px;
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+}
+.video-frame {
+    width: 380px;
+    height: 214px;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0px 1px 2px rgb(0 0 0 / 15%), 
+                0px 1px 3px 1px rgb(0 0 0 / 15%);
+}
+.movie-no-videos {
+    width: 380px;
+    height: 214px;
+    color: rgba(var(--md-sys-color-primary--rgb), 0.05);
+    border: thin solid rgba(var(--md-sys-color-primary--rgb), 0.05);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 60px;
+}
+.director,
+.screenplay {
+    font-size: 20px;
+    font-weight: 300;
+    color: var(--md-sys-color-on-surface);
+
+    display: flex;
+    flex-direction: column;
+}
+.director::before {
+    content: 'Режисер';
+    font-size: 14px;
+    font-weight: 100;
+}
+.screenplay::before {
+    content: 'Автор сценария';
+    font-size: 14px;
+    font-weight: 100;
+}
+
+/* TV page -------------------------------------------------------------------------------------- */
+.tv {
+    display: grid;
+    grid:   5px 20px 60px 23px 10px 23px 135px 20px 23px 23px 23px 23px 77px 35px 40px 40px 1fr 400px /
+            minmax(10px, 1fr) 400px 10px minmax(290px, 4fr) minmax(290px, 4fr) minmax(10px, 1fr);
+    grid-template-areas:
+        '. ...... . ..... ..... .'
+        '. poster . ..... ..... .'
+        '. poster . title title .'
+        '. poster . genres genres .'
+        '. poster . ..... ..... .'
+        '. poster . tagline tagline .'
+        '. poster . overview overview .'
+        '. poster . overview overview .'
+        '. poster . overview overview .'
+        '. poster . ....... ..... .'
+        '. poster . first first .'
+        '. poster . last last .'
+        '. poster . status status .'
+        '. poster . ....... ..... .'
+        '. ...... . crew crew .'
+        '. videos . crew crew .'
+        '. videos . actors actors .'
+        '. ...... . ...... ...... .';
+    align-items: start;
+    justify-content: start;
+    gap: 5px;
+
+    color: var(--md-sys-color-on-primary);
+}
+.tv-status { grid-area: status; }
+.tv-first-air-date { grid-area: first; }
+.tv-last-air-date { grid-area: last; }
+.tv-status { grid-area: status; }
+
+.tv-status,
+.tv-first-air-date, 
+.tv-last-air-date {
+    font-size: 18px;
+    font-weight: 300;
+    display: flex;
+    gap: 10px;
+}
+.tv-status::before {
+    content: 'Статус';
+    font-size: 14px;
+    font-weight: 100;
+}
+.tv-first-air-date::before {
+    content: 'Первая серия';
+    font-size: 14px;
+    font-weight: 100;
+    width: 50px;
+    line-height: 0.8;
+}
+.tv-last-air-date::before {
+    content: 'Последняя серия';
+    font-size: 14px;
+    font-weight: 100;
+    width: 70px;
+    line-height: 0.8;
+}
+.producer,
+.exec-producer {
+    font-size: 20px;
+    font-weight: 300;
+    color: var(--md-sys-color-on-surface);
+
+    display: flex;
+    flex-direction: column;
+}
+.producer::before {
+    content: 'Продюсер';
+    font-size: 14px;
+    font-weight: 100;
+}
+.exec-producer::before {
+    content: 'Исполнительный продюсер';
+    font-size: 14px;
+    font-weight: 100;
+}
+.exec-producer > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 20px;
+    line-height: 0.9;
+}
+.tv-studio {
+    grid-column: 5 / 6;
+    grid-row: 14 / 15;
+    max-width: 160px;
+    max-height: 50px;
+    align-self: end;
+    justify-self: end;
+    margin: 0 0 -20px;
+}
+.tv-suggested > .tile > .title {
+    grid-column: 1 / -1;
+    grid-row: 4 / 5;
+    overflow: hidden;
+    padding: 2px;
+    line-height: 0.8;
+}
+
+
+/* For both ------------------------------------------------------------------------------------- */
+.backdrop {
+    grid-column: 3 / -1;
+    grid-row: 1 / -1;
+    width: 100%;
+    height: 530px;
+    object-fit: cover;
+    object-position: top;
+}
+.movie-backdrop-overlay,
+.tv-backdrop-overlay {
+    grid-column: 1 / -1;
+    grid-row: 1 / 5;
+    width: 100%;
+    height: 530px;
+}
+.movie-poster,
+.tv-poster {
+    grid-area: poster;
+    border-radius: 10px;
+    width: 400px;
+    z-index: 2;
+    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.15), 
+                0px 1px 3px 1px rgba(0, 0, 0, 0.15);   
+    background: linear-gradient(130deg, 
+    rgba(var(--md-sys-color-tertiary--rgb), 0.05), 
+    rgba(var(--md-sys-color-secondary--rgb), 0.05)),
+    rgba(var(--md-sys-color-primary--rgb), 0.05);
+}
+.movie-titles,
+.tv-titles {
+    grid-area: title;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+.movie-title,
+.tv-title {
+    font-size: 40px;
+    font-weight: 500;
+    text-shadow: 0px 1px 8px rgb(0 0 0 / 50%);
+    line-height: 0.7;
+}
+.movie-original-title,
+.tv-original-title {
+    font-size: 20px;
+    font-weight: 100;
+}
+
+.movie-genres,
+.tv-genres {
+    grid-area: genres;
+    display: flex;
+    gap: 10px;
+    font-size: 18px;
+    font-weight: 200;
+}
+.movie-tagline,
+.tv-tagline {
+    grid-area: tagline;
+    font-style: italic;
+    font-weight: 100;
+}
+.movie-overview,
+.tv-overview {
+    grid-area: overview;
+    font-size: 16px;
+    font-weight: 200;
+    line-height: 1;
+    max-height: 210px;
+    overflow: hidden;
+    padding: 0 0 0 20px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.movie-overview::before,
+.tv-overview::before {
+    content: 'Обзор';
+    font-size: 14px;
+    font-weight: 100;
+    margin: 0 0 0 -20px;
+}
+.movie-popularity,
+.tv-popularity {
+    grid-area: popularity;
+}
+.movie-original-language,
+.tv-original-language {
+    grid-area: language;
+}
+.movie-votes,
+.tv-votes {
+    grid-column: 4 / 5;
+    grid-row: 13 / 14;
+    
+    width: 100px;
+    height: 100px;
+    margin: 30px 0 0;
+    z-index: 2;
+    background: var(--md-sys-color-primary);
+    border-radius: 50%;
+    filter: drop-shadow(0px 1px 2px rgb(0 0 0 / 0.4));
+}
+.vote-average {
+    font-size: 40px;
+    font-weight: 500;
+    font-stretch: 50%;
+    fill: var(--md-sys-color-on-primary);
+}
+.arc, .circle {
+    fill: none;
+    stroke-linecap: round;
+    stroke-width: 8px;
+}
+.movie-votes-title,
+.tv-votes-title {
+    grid-column: 4 / 5;
+    grid-row: 13 / 14;
+    width: max-content;
+    margin: 0 0 20px 100px;
+    font-size: 16px;
+    font-weight: 100;
+    align-self: end;
+}
+.movie-vote-count,
+.tv-vote-count {
+    grid-column: 4 / 5;
+    grid-row: 13 / 14;
+    margin: 0 0 0 110px;
+    font-size: 16px;
+    font-weight: 100;
+    align-self: end;
+    color: rgba(var(--md-sys-color-surface--rgb), 0.5); 
+
+    display: flex;
+    gap: 5px; 
+}
+.movie-vote-count::before,
+.tv-vote-count::before {
+    content: 'Голосов';
+}
+.movie-actors,
+.tv-actors {
+    grid-area: actors;
+    height: 275px;
+    overflow: hidden;
+    margin: 0 0 20px;
+    padding: 35px 10px 10px;
+    background: rgba(var(--md-sys-color-surface--rgb), 0.5);
+    border-radius: 10px;
+    box-shadow: 0px 1px 2px rgb(0 0 0 / 15%), 
+                0px 1px 3px 1px rgb(0 0 0 / 15%);
+
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 100px);
+    justify-content: space-evenly;
+    align-items: start;
+    gap: 10px;
+}
+.movie-actors::before,
+.tv-actors::before {
+    content: 'В ролях';
+    grid-column: 1 / -1;
+    width: 400px;
+    margin: -25px 0 0;
+    color: var(--md-sys-color-on-surface);
+    font-size: 20px;
+    font-weight: 600;
+}
+.movie-actor,
+.tv-actor {
+    display: flex;
+    flex-direction: column;
+
+    height: 220px;
+    font-size: 12px;
+    font-weight: 200;
+    line-height: 0.8;
+}
+.movie-actor:hover,
+.tv-actor:hover {
+    cursor: pointer;
+}
+.movie-actor-img,
+.tv-actor-img {
+    width: 100px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0px 1px 2px rgb(0 0 0 / 15%), 
+                0px 1px 3px 1px rgb(0 0 0 / 15%);
+}
+.movie-actor-name,
+.tv-actor-name {
+    margin: 10px 0 0;
+    color: var(--md-sys-color-on-surface);
+}
+.movie-actor-character,
+.tv-actor-character {
+    padding: 5px 0 0;
+    margin: 5px 0 0;
+    border-top: thin solid rgba(var(--md-sys-color-primary--rgb), 0.1);
+    color: var(--md-sys-color-on-surface-variant);
+}
+.crew,
+.tv-crew {
+    grid-area: crew;
+    padding: 10px;
+    height: 100%;
+
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 0 25px;
+}
+.movie-suggested,
+.tv-suggested {
+    grid-column: 2 / -2;
+    grid-row: -2 / -1;
+    height: 360px;
+    overflow: hidden;
+    margin: 15px 0;
+    padding: 35px 10px 10px;
+    background: rgba(var(--md-sys-color-surface--rgb), 0.5);
+    border-radius: 10px;
+    box-shadow: 0px 1px 2px rgb(0 0 0 / 15%), 
+                0px 1px 3px 1px rgb(0 0 0 / 15%);
+
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 160px);
+    justify-content: space-evenly;
+    align-items: start;
+    gap: 5px;
+}
+.movie-suggested::before,
+.tv-suggested::before {
+    content: 'Рекомендуется к просмотру';
+    grid-column: 1 / -1;
+    width: 400px;
+    margin: -25px 0 0;
+    color: var(--md-sys-color-on-surface);
+    font-size: 20px;
+    font-weight: 600;
+}
+.movie-suggested > .tile,
+.tv-suggested > .tile {
+    grid: 195px 27px 30px 40px / 60px 87px;
+}
+.movie-suggested > .tile > .poster,
+.tv-suggested > .tile > .poster {
+    width: 150px;
+    height: 225px;
+}

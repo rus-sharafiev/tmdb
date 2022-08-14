@@ -194,7 +194,7 @@ export const votesCircle = async (votes, rad, center, cls, vote_count) => {
       case (votes < 7): outer = '#423d0f'; inner = '#d2d531'; break;
       case (votes <= 10): outer = '#204529'; inner = '#21d07a'; break;
     }
-    let circlePercent = 36 * votes;
+    let circlePercent = 36 * votes - 1;
   
     svg.setAttribute("aria-hidden","true");
     svg.setAttribute('class', `no-select ${cls}`);
@@ -217,6 +217,8 @@ export const votesCircle = async (votes, rad, center, cls, vote_count) => {
   
     if (votes == 0 || votes == undefined) {
       text.innerHTML = '-'; 
+    } else if (votes == 10) {
+      text.innerHTML = '10'; 
     } else {
       text.innerHTML = votes.toFixed(1);
     };
@@ -415,8 +417,8 @@ export const personBirthday = async (birthday, cls) => {
   return cont;
 }
 
-
-export const filters = async () => {
+// Discover filters -----------------------------------------------------------------
+export const filters = async (type) => {
   let cont = div('filters no-select');
 
   //sort
@@ -456,7 +458,7 @@ export const filters = async () => {
     minRating.onchange = () => btn.classList.add('ready');
   let minRatingLabel = document.createElement('label');
     minRatingLabel.for = 'min-rating';
-    minRatingLabel.innerHTML = 'min';
+    minRatingLabel.innerHTML = 'от';
   
   let maxRating = document.createElement('input');
     maxRating.type = 'number';
@@ -467,7 +469,7 @@ export const filters = async () => {
     maxRating.onchange = () => btn.classList.add('ready');
   let maxRatingLabel = document.createElement('label');
     maxRatingLabel.for = 'max-rating';
-    maxRatingLabel.innerHTML = 'max';
+    maxRatingLabel.innerHTML = 'до';
     
   ratingCont.append(minRatingLabel, minRating, maxRatingLabel, maxRating); 
 
@@ -482,36 +484,50 @@ export const filters = async () => {
     minVotes.onchange = () => btn.classList.add('ready');
   let minVotesLabel = document.createElement('label');
     minVotesLabel.for = 'min-votes';
-    minVotesLabel.innerHTML = 'min';
+    minVotesLabel.innerHTML = 'от';
   
   let maxVotes = document.createElement('input');
     maxVotes.type = 'number';
     maxVotes.id = 'max-votes';
     maxVotes.name = 'max_votes';
-    maxVotes.placeholder = '100000';
-    maxVotes.min = 0; maxVotes.max = 100000;
+    maxVotes.placeholder = '40000';
+    maxVotes.min = 0; maxVotes.max = 99999;
     maxVotes.onchange = () => btn.classList.add('ready');
   let maxVotesLabel = document.createElement('label');
     maxVotesLabel.for = 'max-votes';
-    maxVotesLabel.innerHTML = 'max';
+    maxVotesLabel.innerHTML = 'до';
   
-  votesCont.append(minVotesLabel, minVotes, maxVotesLabel, maxVotes);  
+  votesCont.append(minVotesLabel, minVotes, maxVotesLabel, maxVotes);
 
-  // year
+  // year 
   let yearCont = div('year-container');
-  let Year = document.createElement('input');
-    Year.type = 'text';
-    Year.id = 'year';
-    Year.name = 'year';
-    Year.placeholder = 'min';
+  let minYear = document.createElement('input');
+    minYear.type = 'date';
+    minYear.id = 'min-year';
+    minYear.name = 'min_year';
+    minYear.required = true;
+    minYear.onchange = () => {btn.classList.add('ready'); console.log(minYear.value)}
+  let minYearLabel = document.createElement('label');
+    minYearLabel.for = 'min-year';
+    minYearLabel.innerHTML = ' с';
   
-    yearCont.append(Year);  
+  let maxYear = document.createElement('input');
+    maxYear.type = 'date';
+    maxYear.id = 'max-year';
+    maxYear.name = 'max_year';
+    maxYear.required = true;
+    maxYear.onchange = () => btn.classList.add('ready');
+  let maxYearLabel = document.createElement('label');
+    maxYearLabel.for = 'max-year';
+    maxYearLabel.innerHTML = 'по';
+  
+  yearCont.append(minYearLabel, minYear, maxYearLabel, maxYear);
    
   // submit btn
   let btn = div('', 'filters-submit-btn');
   btn.innerHTML = 'Подобрать';
   btn.onclick = () => {
-    showList('discover', 'movie');
+    showList('discover', type);
     btn.classList.remove('ready');
   }
 

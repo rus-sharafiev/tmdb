@@ -1,0 +1,9 @@
+main.start {
+    box-shadow: none;
+    background: linear-gradient(180deg,
+    rgba(var(--md-sys-color-primary--rgb), 1),
+    rgba(var(--md-sys-color-primary--rgb), 1) 30px,
+    rgba(var(--md-sys-color-primary--rgb), 0.05) 30px, 
+    rgba(var(--md-sys-color-primary--rgb), 0.05)),
+    var(--md-sys-color-background);
+}

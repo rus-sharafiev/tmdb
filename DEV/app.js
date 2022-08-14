@@ -43,6 +43,7 @@ document.body.onload = () => {
           personMenuList(); break;
       }
   });
+  startPage();
   // searchMedia('друзья', 'movie').catch( (error) => main.innerHTML = `${error}`);
   // showMovie(19995).catch( (error) => main.innerHTML = `${error}`);
   // showTv(71912).catch( (error) => main.innerHTML = `${error}`);
@@ -54,6 +55,8 @@ document.body.onload = () => {
 // Header ---------------------------------------------------------------------------------------
 const createHeader = async () => {
   const logo = new Image(); logo.src = '/IMG/logo.svg'; logo.setAttribute('class', 'logo');
+  const logoOverlay = load.div('logo-overlay');
+  logoOverlay.onclick = () => startPage();
 
   const searchForm = document.createElement('form'); searchForm.id = 'search-form';
 
@@ -151,7 +154,7 @@ const createHeader = async () => {
       searchMedia(searchData.get('query'), searchData.get('year'), active[0].id).catch( (error) => main.innerHTML = `${error}`);
     }
 
-  return Promise.all([logo, searchOverlay, searchForm]);
+  return Promise.all([logo, logoOverlay, searchOverlay, searchForm]);
 }
 
 // Nav ------------------------------------------------------------------------------------------
@@ -221,6 +224,13 @@ const createNav = async () => {
   return Promise.all([menu, movies, tvs, people, listContainer]);
 }
 
+// Start page -----------------------------------------------------------------------------------
+const startPage = async () => {
+  main.innerHTML = '';
+  main.setAttribute('class', 'start');
+
+}
+
 // Search Tile ----------------------------------------------------------------------------------
 const tileContent = async (media, type) => {
   let media_poster, media_title, media_original_title, media_release_date;
@@ -263,7 +273,7 @@ const searchMedia = async (query, year, type, page) => {
   let response = await fetch(`https://kz.srrlab.ru/search/?${req}`);
   const data = await response.json();
 
-  if (!page) { main.innerHTML = ''; main.style = null; } else { main.removeChild(document.getElementById('load-more')); }
+  if (!page) { main.innerHTML = ''; main.style = null; } else if (document.getElementById('load-more')) { main.removeChild(document.getElementById('load-more')); }
   main.setAttribute('class', 'search');
   load.tileLoadingAnimation(data.results.length); //return;
 
@@ -301,17 +311,18 @@ const searchMedia = async (query, year, type, page) => {
       main.append(loadMore);
 
       main.onscroll = () => {
-        if (main.classList.contains('search') && (main.offsetHeight + main.scrollTop >= main.scrollHeight)) {
+        if (main.classList.contains('search') && ((main.offsetHeight + main.scrollTop + 400) >= main.scrollHeight)) {
           loadMore.innerHTML = '<div class="lds-default"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>';
           let nextpage = page + 1;
+          main.onscroll = () => {};
           searchMedia(query, year, type, nextpage);
         }  
       }
-    }
+    } else { main.onscroll = () => {} }
   }
 }
 
-// Menu List ------------------------------------------------------------------------------------
+// Discover ------------------------------------------------------------------------------------
 const movieMenuList = async () => {
   let cont = document.getElementById('nav-menu-list');
   cont.innerHTML = '';
@@ -319,12 +330,12 @@ const movieMenuList = async () => {
   let popular = await load.text('Популярные', '', 'popular'); cont.append(popular);
   let upcoming = await load.text('Новинки', '', 'upcoming'); cont.append(upcoming);
 
-  let filters = await load.filters(); cont.append(filters);
+  let filters = await load.filters('movie'); cont.append(filters);
 
   cont.childNodes.forEach(element => {
     if (element == filters) return;
     element.onclick = () => {
-      showList('list', document.getElementsByClassName('nav-active')[0].id, element.id);
+      showList('list', 'movie', element.id);
     }
   });
 }
@@ -336,12 +347,12 @@ const tvMenuList = async () => {
   let popular = await load.text('Популярные', '', 'popular'); cont.append(popular);
   let upcoming = await load.text('В этом сезоне', '', 'on_the_air'); cont.append(upcoming);
 
-  let filters = await load.filters(); cont.append(filters);
+  let filters = await load.filters('tv'); cont.append(filters);
   
   cont.childNodes.forEach(element => {
     if (element == filters) return;
     element.onclick = () => {
-      showList('list', document.getElementsByClassName('nav-active')[0].id, element.id);
+      showList('list', 'tv', element.id);
     }
   });
 
@@ -358,7 +369,9 @@ export const showList = async (a, type, list, page) => {
   let minRating = document.getElementById('min-rating'); // vote_average.gte
   let maxRating = document.getElementById('max-rating'); // vote_average.lte
   let minVotes = document.getElementById('min-votes'); // vote_count.gte
-  let maxVotes = document.getElementById('max-votes'); // vote_count.lte
+  let maxVotes = document.getElementById('max-votes'); // vote_count.lte 
+  let minDate = document.getElementById('min-year'); // primary_release_date.gte
+  let maxDate = document.getElementById('max-year'); // primary_release_date.lte 
   
   let sortBy = `&sort_by=${sort.value}.${order.value}`;
   let discover_vars = sortBy;
@@ -366,6 +379,8 @@ export const showList = async (a, type, list, page) => {
   if (maxRating.value) discover_vars = discover_vars.concat(`&vote_average_lte=${maxRating.value}`);
   if (minVotes.value) discover_vars = discover_vars.concat(`&vote_count_gte=${minVotes.value}`);
   if (maxVotes.value) discover_vars = discover_vars.concat(`&vote_count_lte=${maxVotes.value}`);
+  if (minDate.value) discover_vars = discover_vars.concat(`&primary_release_date_gte=${minDate.value}`);
+  if (maxDate.value) discover_vars = discover_vars.concat(`&primary_release_date_lte=${maxDate.value}`);
 
   if (!page) {
     load.fetchAnimation(); main.style.overflow = 'hidden';
@@ -379,7 +394,7 @@ export const showList = async (a, type, list, page) => {
   let response = await fetch(`https://kz.srrlab.ru/${a}/?${req}`);
   const data = await response.json();    // console.log(data);
 
-  if (!page) { main.innerHTML = ''; main.style = null; } else { main.removeChild(document.getElementById('load-more')); }
+  if (!page) { main.innerHTML = ''; main.style = null; } else if (document.getElementById('load-more')) { main.removeChild(document.getElementById('load-more')); }
   main.setAttribute('class', 'search');
   load.tileLoadingAnimation(data.results.length); //return;
 
@@ -416,14 +431,15 @@ export const showList = async (a, type, list, page) => {
       (await Promise.all([iconLoadMore, textLoadMore])).map((el) => { if (el) loadMore.append(el)});
       main.append(loadMore);
 
-      main.onscroll = () => {  
-        if (main.classList.contains('search') && (main.offsetHeight + main.scrollTop >= main.scrollHeight)) {
+      main.onscroll = () => {
+        if (main.classList.contains('search') && ((main.offsetHeight + main.scrollTop + 400) >= main.scrollHeight)) {
           loadMore.innerHTML = '<div class="lds-default"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>';
           let nextpage = page + 1;
+          main.onscroll = () => {};
           showList(a, type, list, nextpage);
         }  
       }
-    }
+    } else { main.onscroll = () => {} }
   }
 }
 
@@ -433,7 +449,7 @@ export const showMovie = async (id) => {
 
   const response = await fetch(`https://kz.srrlab.ru/movie/?id=${id}`);
 
-  const movie = await response.json(); console.log(movie);
+  const movie = await response.json(); // console.log(movie);
   if (movie.id == 'error') { main.innerHTML = `Ошибка PHP cURL запроса: ${movie.error}`; return; }
 
   let style = load.vibrantStyles(movie.poster_path);
@@ -523,7 +539,7 @@ export const showTv = async (id) => {
   load.fetchAnimation(); main.style.overflow = 'hidden';
 
   const response = await fetch(`https://kz.srrlab.ru/tv/?id=${id}`);
-  const tv = await response.json();   console.log(tv);
+  const tv = await response.json();   // console.log(tv);
   if (tv.id == 'error') { main.innerHTML = `Ошибка PHP cURL запроса: ${tv.error}`; return; }
 
   let style = load.vibrantStyles(tv.poster_path);
@@ -608,7 +624,7 @@ export const showPerson = async (id) => {
   load.fetchAnimation(); main.style.overflow = 'hidden';
 
   const response = await fetch(`https://kz.srrlab.ru/person/?id=${id}`);
-  const person = await response.json();    console.log(person);
+  const person = await response.json();    // console.log(person);
   if (person.id == 'error') { main.innerHTML = `Ошибка PHP cURL запроса: ${person.error}`; return; }
 
   let poster = load.image(person.profile_path, 'person-poster');

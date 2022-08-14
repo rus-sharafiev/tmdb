@@ -1,11 +1,11 @@
 @charset "utf-8";
 
 @import 'supplementary.css';
-@import 'movie.css';
+@import 'start_page.css';
+@import 'movie_tv_page.css';
 @import 'movie_collection.css';
-@import 'tv.css';
 @import 'tv_episodes.css';
-@import 'person.css';
+@import 'person_page.css';
 @import 'mobile.css';
 
 * {
@@ -56,6 +56,16 @@ header > .logo {
     grid-row: 1 / 1;
     width: 170px;
     justify-self: center;
+}
+header > .logo-overlay {
+    grid-column: 2 / 3;
+    grid-row: 1 / 1;
+    width: 100%;
+    height: 100%;
+    z-index: 20;
+}
+header > .logo-overlay:hover {
+    cursor: pointer;
 }
 header > form {
     grid-column: 3 / 4;
@@ -308,7 +318,8 @@ nav.menu-open > div.nav-active:after {
 }
 #top_rated:hover,
 #popular:hover,
-#upcoming:hover {
+#upcoming:hover,
+#on_the_air:hover {
     cursor: pointer;
     color: var(--md-sys-color-on-surface);
 }
@@ -333,36 +344,48 @@ nav.menu-open > div.nav-active:after {
     margin: 15px 0;
     font-size: 20px;
 }
-.filters > div > label {
-    font-size: 14px;
-    font-weight: 300;
-    width: 30px;
-    margin: 8px 0 0 8px;
-    color: rgba(var(--md-sys-color-outline--rgb), 0.6);
-    z-index: 1;
-}
 .filters > div > input::placeholder {
     color: rgba(var(--md-sys-color-outline--rgb), 0.3);
 }
 .sort-container,
 .votes-container,
-.rating-container {
+.rating-container,
+.year-container {
     margin: 15px 0;
-    padding: 3px;
+    padding: 10px 3px 3px;
     border-radius: 8px;
     border: thin solid rgba(var(--md-sys-color-primary--rgb), 0.1);
     display: flex;
-    flex-direction: column;
     gap: 3px;
+}
+.sort-container,
+.year-container {
+    flex-direction: column;
+}
+.filters > div > label {
+    font-size: 14px;
+    font-weight: 300;
+    width: 25px;
+    color: rgba(var(--md-sys-color-outline--rgb), 0.6);
+    z-index: 1;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.year-container > label {
+    margin: 8px 0 0 15px;
 }
 .votes-container::before,
 .sort-container::before,
-.rating-container::before {
-    margin: -12px 5px 3px;
+.rating-container::before,
+.year-container::before {
+    position: absolute;
+    margin: -18px 5px 3px;
     padding: 0 3px;
     width: max-content;
     font-weight: 400;
-    color: rgba(var(--md-sys-color-outline--rgb), 0.8);
+    color: var(--md-sys-color-on-surface-variant);
     background: linear-gradient(0, 
     rgba(var(--md-sys-color-primary--rgb), 0.05), 
     rgba(var(--md-sys-color-primary--rgb), 0.05)), 
@@ -377,25 +400,35 @@ nav.menu-open > div.nav-active:after {
 .votes-container::before {
     content: 'Количество голосов';
 }
+.year-container::before {
+    content: 'Дата премьеры';
+}
 #filters-sort,
 #filters-order,
 #max-rating,
 #min-rating,
 #max-votes,
-#min-votes {
+#min-votes,
+#min-year,
+#max-year {
     outline: none;
     height: 30px;
+    width: 76px;
     padding: 0 5px;
     border-radius: 5px;
     border: thin solid rgba(var(--md-sys-color-outline--rgb), 0.05);
     background: rgba(var(--md-sys-color-surface--rgb), 0.5);
     transition: all 0.2s cubic-bezier(0.19, 1, 0.22, 1);
 }
-#max-rating,
-#min-rating,
-#max-votes,
-#min-votes {
-    padding-left: 40px;
+#filters-sort,
+#filters-order,
+#min-year,
+#max-year  {
+    width: auto;
+}
+#min-year,
+#max-year {
+    padding-left: 50px;
     margin-top: -23px;
 }
 #filters-sort:hover,
@@ -403,7 +436,9 @@ nav.menu-open > div.nav-active:after {
 #max-votes:hover,
 #min-votes:hover,
 #max-rating:hover,
-#min-rating:hover {
+#min-rating:hover,
+#min-year:hover,
+#max-year:hover {
     cursor: pointer;
     background: var(--md-sys-color-surface);
 }
@@ -441,10 +476,6 @@ nav.menu-open > div.nav-active:after {
     rgba(var(--md-sys-color-tertiary--rgb), 0.5),
     rgba(var(--md-sys-color-secondary--rgb), 0.5)),
         var(--md-sys-color-surface);
-}
-#max-votes,
-#min-votes {
-
 }
 /* Main ---------------------------------------------------------- */
 main {
@@ -589,37 +620,27 @@ main {
     stroke-width: 5px;
 }
 
-/* Load more button */
+/* Load more button --------------------------------------------- */
 #load-more {
     padding: 5px;
-    color: rgba(var(--md-sys-color-primary--rgb), 0.2);
+    color: rgba(var(--md-sys-color-primary--rgb), 0.1);
 
     display: grid;
-    grid: 100px 100px 80px 100px / 200px;
+    grid: 50px 50px 85px 200px / 200px;
     justify-items: center;
     align-items: center;
 }
-#load-more:hover {
-    cursor: pointer;
-}
-#load-more:hover > .icon-load-more, #load-more:hover > .text-load-more {
-    background: linear-gradient(90deg, var(--md-sys-color-tertiary), var(--md-sys-color-secondary));
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-variation-settings: 'FILL' 1;
-}
 .icon-load-more {
     grid-column: 1 / -1;
-    grid-row: 2 / 3;
+    grid-row: 3 / 4;
     font-size: 100px;
-    font-variation-settings: 'FILL' 0;
-    transition: all 0.2s linear;
+    font-weight: 100;
 }
 .text-load-more {
     grid-column: 1 / -1;
-    grid-row: 3 / 4;
+    grid-row: 2 / 3;
     font-size: 30px;
+    font-weight: 200;
 }
 
 /* Tile Loading -------------------------------------------------- */
