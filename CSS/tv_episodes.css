@@ -132,27 +132,6 @@
     font-weight: 100;
     margin: 0 0 0 -20px;
 }
-.tv-season-close-btn {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    font-size: 50px;
-    font-variation-settings: 'FILL' 0;
-    transition: all 0.2s linear;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-.tv-season-close-btn::before {
-    content: 'Закрыть';
-    font-family: 'Roboto Flex', sans-serif;
-    font-size: 24px;
-    font-weight: 200;
-}
-.tv-season-close-btn:hover {
-    cursor: pointer;
-    font-variation-settings: 'FILL' 1;
-}
 #tv-episodes-container {
     grid-column: 1 / 3;
     grid-row: 3 / 4;

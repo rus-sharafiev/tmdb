@@ -1,9 +1,153 @@
 main.start {
     box-shadow: none;
+    overflow: visible;
+    position: static;
+    height: auto;
     background: linear-gradient(180deg,
     rgba(var(--md-sys-color-primary--rgb), 1),
     rgba(var(--md-sys-color-primary--rgb), 1) 30px,
     rgba(var(--md-sys-color-primary--rgb), 0.05) 30px, 
     rgba(var(--md-sys-color-primary--rgb), 0.05)),
     var(--md-sys-color-background);
+
+    display: grid;
+    grid: 230px 810px / 200px 1fr;
+    gap: 10px 0;
+}
+main.start + header > .logo {
+    display: none;
+}
+main.start + header > form {
+    margin: 430px 20px 0;
+}
+main.start + header > form > input#query {
+    width: 570px;
+}
+.start-title-overlay {
+    grid-column: 1 / -1;
+    grid-row: 1 / 2;
+    align-self: start;
+
+    width: 100%;
+    height: 272px;
+    margin: -42px 0 0;
+    border-radius: 18px;
+    background: linear-gradient(to right, 
+        rgba(var(--md-sys-color-primary--rgb), 0.97), 
+        rgba(var(--md-sys-color-primary--rgb), 0.9)), 
+        url(/IMG/start_background.png);
+        
+    background-position: right;
+    background-size: contain;
+    box-shadow: 0px 1px 2px rgb(0 0 0 / 15%), 
+                0px 1px 3px 1px rgb(0 0 0 / 15%);
+}
+.start-title-container {
+    grid-column: 1 / -1;
+    grid-row: 1 / 2;
+    align-self: start;
+
+    position: absolute;
+    width: 600px;
+    margin: -25px 0 0;
+    left: 360px;
+    color: var(--md-sys-color-on-primary);
+
+    display: grid;
+    grid: 60px 40px 40px 20px 1fr / 1fr;
+    align-items: center;
+}
+.start-title-container > img {
+    width: 530px;
+}
+.start-title-container > div:nth-child(1) {
+    font-size: 60px;
+    font-weight: 700;
+}
+.start-title-container > div:nth-child(2) {
+    font-size: 20px;
+    font-weight: 100;
+    margin: -30px 0 0 140px;
+}
+.start-title-container > div:nth-child(4) {
+    margin: 5px 0 0 5px;
+    font-size: 20px;
+    font-weight: 500;
+    color: rgba(var(--md-sys-color-surface--rgb), 0.8);
+}
+#start-container {
+    grid-column: 1 / -1;
+    grid-row: 2 / 3;
+
+    display: grid;
+    grid: 400px 400px / 1fr;
+    gap: 10px;
+}
+main.start > div > div > .tile.loading {
+    opacity: 1;
+}
+main.start > div > div > .tile {
+    display: grid;
+    grid: 237px 27px 30px 40px / 60px 117px;
+    opacity: 0;
+    transition: opacity 0.3s linear;
+}
+main.start > div > div > .tile > .poster {
+    width: 180px;
+    height: 270px;
+}
+
+.start-popular,
+.start-top {
+    grid-column: 1 / -1;
+    position: relative;
+
+    height: 400px;
+    overflow: overlay;
+    padding: 35px 10px 10px;
+
+    display: grid;
+    grid-template-columns: repeat(20, 190px);
+    justify-content: start;
+    align-items: start;
+}
+
+.start-popular {
+    grid-row: 1 / 2;
+}
+.start-top {
+    grid-row: 2 / 3;
+}
+.start-popular::before,
+.start-top::before {
+    position: absolute;
+    margin: 5px 0 0 20px;
+    font-size: 24px;
+    font-weight: 400;
+}
+.start-popular.start-movie::before {
+    content: 'Популярные фильмы';
+}
+.start-top.start-movie::before {
+    content: 'Топ фильмов';
+}
+.start-popular.start-tv::before {
+    content: 'Популярные сериалы';
+}
+.start-top.start-tv::before {
+    content: 'Топ сериалов';
+}
+.start-right-border,
+.start-left-border {
+    position: absolute;
+    height: 810px;
+    width: 10px;
+    z-index: 10;
+}
+.start-right-border {
+    right: 8px;
+    background: linear-gradient(to left , #f1f1f5, transparent)
+}
+.start-left-border {
+    background: linear-gradient(to right , #f1f1f5, transparent)
 }

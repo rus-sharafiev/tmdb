@@ -1,4 +1,5 @@
 // import {Workbox} from 'workbox-window';
+// import {backgroudPosters} from '/DEV/background.js';
 import * as load from '/DEV/modules.js';
 
 // if ('serviceWorker' in navigator) {
@@ -14,7 +15,7 @@ const footer = document.createElement('footer');
 
 // Load page
 document.body.onload = () => {
-  document.body.append(header, nav, main, footer); 
+  document.body.append(main, header, nav, footer); 
   createHeader()
     .then( (elemets) => elemets.map(el => header.append(el)));
   createNav()
@@ -25,17 +26,20 @@ document.body.onload = () => {
           document.getElementById('movie').classList.add('nav-active'); 
           document.querySelector('input').placeholder = 'Поиск фильмов';
           document.querySelector('input').setCustomValidity('Введите название фильма');
-          movieMenuList(); break;
+          movieMenuList();
+          startPageContainer('movie'); break;
         case (window.location.pathname == '/movie') : 
           document.getElementById('movie').classList.add('nav-active');
           document.querySelector('input').placeholder = 'Поиск фильмов';
           document.querySelector('input').setCustomValidity('Введите название фильма');
-          movieMenuList(); break;
+          movieMenuList();
+          startPageContainer('movie'); break;
         case (window.location.pathname == '/tv') : 
           document.getElementById('tv').classList.add('nav-active');
           document.querySelector('input').placeholder = 'Поиск сериалов';
           document.querySelector('input').setCustomValidity('Введите название сериала');
-          tvMenuList(); break;
+          tvMenuList();
+          startPageContainer('tv'); break;
         case (window.location.pathname == '/person') : 
           document.getElementById('person').classList.add('nav-active');
           document.querySelector('input').placeholder = 'Поиск знаменитостей';
@@ -56,7 +60,15 @@ document.body.onload = () => {
 const createHeader = async () => {
   const logo = new Image(); logo.src = '/IMG/logo.svg'; logo.setAttribute('class', 'logo');
   const logoOverlay = load.div('logo-overlay');
-  logoOverlay.onclick = () => startPage();
+  logoOverlay.onclick = () => {
+    startPage().then(() => startPageContainer(document.getElementsByClassName('nav-active')[0].id));
+    searchFormInput.value = '';
+    searchFormYear.value = '';
+    searchFormYearLabel.style.display = 'none';
+    searchFormYear.style.display = 'none';
+    searchFormClrBtn.style.display = 'none';
+    searchFormInput.classList.remove('text-inside');
+  };
 
   const searchForm = document.createElement('form'); searchForm.id = 'search-form';
 
@@ -87,11 +99,12 @@ const createHeader = async () => {
       }
       searchFormInput.onblur = () => {
         setTimeout(() => {
-        if (document.activeElement.id != 'year') {
-          searchOverlay.style.opacity = "0";
-          setTimeout(() => {
-            searchOverlay.style.display = 'none';
-          }, "300")}
+          if ((document.activeElement.id != 'year')) {
+            searchOverlay.style.opacity = "0";
+              setTimeout(() => {
+                searchOverlay.style.display = 'none';
+              }, "300")
+          }
         }, '10');
       }
     const searchFormYear = document.createElement('input');
@@ -107,11 +120,12 @@ const createHeader = async () => {
       
       searchFormYear.onblur = () => {
         setTimeout(() => {
-        if (document.activeElement.id != 'query') {
-          searchOverlay.style.opacity = "0";
-          setTimeout(() => {
-            searchOverlay.style.display = 'none';
-          }, "300")}
+          if (document.activeElement.id != 'query') {
+            searchOverlay.style.opacity = "0";
+            setTimeout(() => {
+              searchOverlay.style.display = 'none';
+            }, "300")
+          }
         }, '10');
       }
 
@@ -186,6 +200,8 @@ const navButton = async (txt, symb, id) => {
     if (document.querySelector('input').value != '') { 
       const searchData = new FormData(document.getElementById('search-form'));  
       searchMedia(searchData.get('query'), searchData.get('year'), btn.id).catch( () => main.innerHTML = '¯\_(ツ)_/¯');
+    } else if (main.classList.contains('start')) {
+      startPageContainer(btn.id);
     }
   };
   return btn;
@@ -224,13 +240,6 @@ const createNav = async () => {
   return Promise.all([menu, movies, tvs, people, listContainer]);
 }
 
-// Start page -----------------------------------------------------------------------------------
-const startPage = async () => {
-  main.innerHTML = '';
-  main.setAttribute('class', 'start');
-
-}
-
 // Search Tile ----------------------------------------------------------------------------------
 const tileContent = async (media, type) => {
   let media_poster, media_title, media_original_title, media_release_date;
@@ -263,6 +272,12 @@ const tileContent = async (media, type) => {
 
 // Search ---------------------------------------------------------------------------------------
 const searchMedia = async (query, year, type, page) => {
+  
+  if (main.classList.contains('start')) {
+    main.classList.remove('start');
+    main.innerHTML = '';
+  }
+
   if (!page) {
     load.fetchAnimation(); main.style.overflow = 'hidden';
     var req = `t=${type}&q=${query}&y=${year}`;
@@ -294,10 +309,10 @@ const searchMedia = async (query, year, type, page) => {
   if (!page) {
     main.scrollTop = 0;
     main.innerHTML = '';
-    tiles.map((tile) => { if (tile) main.append(tile) } );
+    tiles.map((tile) => { if (tile) { main.append(tile); setTimeout(() => { tile.style.opacity = '1';}, 50) }});
   } else {
-    Array.from(document.getElementsByClassName('loading')).forEach( (element) => { main.removeChild(element) });
-    tiles.map((tile) => { if (tile) main.append(tile) } );
+    Array.from(document.getElementsByClassName('loading')).forEach( (element) => { main.removeChild(element) });    
+    tiles.map((tile) => { if (tile) { main.append(tile); setTimeout(() => { tile.style.opacity = '1';}, 50) }});
   }
 
   if (data.total_pages > 1) {
@@ -364,14 +379,20 @@ const personMenuList = async () => {
 }
 
 export const showList = async (a, type, list, page) => {
+
+  if (main.classList.contains('start')) {
+    main.classList.remove('start');
+    main.innerHTML = '';
+  }
+
   let sort = document.getElementById('filters-sort');
   let order = document.getElementById('filters-order');
-  let minRating = document.getElementById('min-rating'); // vote_average.gte
-  let maxRating = document.getElementById('max-rating'); // vote_average.lte
-  let minVotes = document.getElementById('min-votes'); // vote_count.gte
-  let maxVotes = document.getElementById('max-votes'); // vote_count.lte 
-  let minDate = document.getElementById('min-year'); // primary_release_date.gte
-  let maxDate = document.getElementById('max-year'); // primary_release_date.lte 
+  let minRating = document.getElementById('min-rating');
+  let maxRating = document.getElementById('max-rating');
+  let minVotes = document.getElementById('min-votes');
+  let maxVotes = document.getElementById('max-votes');
+  let minDate = document.getElementById('min-year');
+  let maxDate = document.getElementById('max-year');
   
   let sortBy = `&sort_by=${sort.value}.${order.value}`;
   let discover_vars = sortBy;
@@ -390,7 +411,7 @@ export const showList = async (a, type, list, page) => {
     if (a == 'list') var req = `t=${type}&l=${list}&p=${page}`;
     if (a == 'discover') var req = `t=${type}${discover_vars}&page=${page}`;
   }
-
+  
   let response = await fetch(`https://kz.srrlab.ru/${a}/?${req}`);
   const data = await response.json();    // console.log(data);
 
@@ -415,10 +436,10 @@ export const showList = async (a, type, list, page) => {
   if (!page) {
     main.scrollTop = 0;
     main.innerHTML = '';
-    tiles.map((tile) => { if (tile) main.append(tile) } );
+    tiles.map((tile) => { if (tile) { main.append(tile); setTimeout(() => { tile.style.opacity = '1';}, 50) }});
   } else {
     Array.from(document.getElementsByClassName('loading')).forEach( (element) => { main.removeChild(element) });
-    tiles.map((tile) => { if (tile) main.append(tile) } );
+    tiles.map((tile) => { if (tile) { main.append(tile); setTimeout(() => { tile.style.opacity = '1';}, 50) }});
   }
 
   if (data.total_pages > 1) {
@@ -445,6 +466,10 @@ export const showList = async (a, type, list, page) => {
 
 // Movie ----------------------------------------------------------------------------------------
 export const showMovie = async (id) => {
+  if (main.classList.contains('start')) {
+    main.classList.remove('start');
+    main.innerHTML = '';
+  }
   load.fetchAnimation(); main.style.overflow = 'hidden';
 
   const response = await fetch(`https://kz.srrlab.ru/movie/?id=${id}`);
@@ -512,7 +537,7 @@ export const showMovie = async (id) => {
   main.setAttribute('class','movie');
   content.map((el) => { if (el) main.append(el) });
 
-  let suggested = document.createElement('div'); suggested.setAttribute('class', 'movie-suggested');
+  let suggested = document.createElement('div'); suggested.setAttribute('class', 'movie-suggested'); main.append(suggested);
 
   let tiles = await Promise.all(movie.recommendations.results.map( async (movie) => {
     let tile = document.createElement('div'); tile.setAttribute('class','tile no-select');
@@ -529,17 +554,20 @@ export const showMovie = async (id) => {
     return tile;
   }));
 
-  tiles.map( (el) => suggested.append(el) );
-  main.append(suggested);
+  tiles.map((tile) => { if (tile) { suggested.append(tile); setTimeout(() => { tile.style.opacity = '1';}, 10) }});
 
 }
 
 // TV -------------------------------------------------------------------------------------------
 export const showTv = async (id) => {
+  if (main.classList.contains('start')) {
+    main.classList.remove('start');
+    main.innerHTML = '';
+  }
   load.fetchAnimation(); main.style.overflow = 'hidden';
 
   const response = await fetch(`https://kz.srrlab.ru/tv/?id=${id}`);
-  const tv = await response.json();   // console.log(tv);
+  const tv = await response.json();    console.log(tv);
   if (tv.id == 'error') { main.innerHTML = `Ошибка PHP cURL запроса: ${tv.error}`; return; }
 
   let style = load.vibrantStyles(tv.poster_path);
@@ -571,7 +599,7 @@ export const showTv = async (id) => {
 
   // TV seasons
   let seasons = document.createElement('div'); seasons.setAttribute('class', 'tv-seasons');
-  let specials; if (tv.seasons[0].name.includes('Спецматериалы')) specials = tv.seasons.shift(); // special episodes are useless, IMHO
+  let specials; if (tv.seasons[0].name.includes('Спецматериалы')) specials = tv.seasons.shift(); // special episodes are useless I think, so I'm not gonna use it
   let seasonsTiles = await Promise.all(tv.seasons.map( (season) => load.seasonTile(tv.id, season)));
   seasonsTiles.map( (el) => seasons.append(el) );
 
@@ -602,7 +630,7 @@ export const showTv = async (id) => {
   main.setAttribute('class','tv');
   content.map((el) => { if (el) main.append(el) });  
 
-  let suggested = document.createElement('div'); suggested.setAttribute('class', 'tv-suggested');
+  let suggested = document.createElement('div'); suggested.setAttribute('class', 'tv-suggested');main.append(suggested);
   let tiles = await Promise.all(tv.recommendations.results.map( async (tv) => {
     let tile = document.createElement('div'); tile.setAttribute('class','tile no-select');
       let poster = load.image(tv.poster_path, 'poster');
@@ -615,12 +643,15 @@ export const showTv = async (id) => {
     return tile;
   }));
 
-  tiles.map( (el) => suggested.append(el) );
-  main.append(suggested);
+  tiles.map((tile) => { if (tile) { suggested.append(tile); setTimeout(() => { tile.style.opacity = '1';}, 10) }});
 }
 
 // People ---------------------------------------------------------------------------------------
 export const showPerson = async (id) => {
+  if (main.classList.contains('start')) {
+    main.classList.remove('start');
+    main.innerHTML = '';
+  }
   load.fetchAnimation(); main.style.overflow = 'hidden';
 
   const response = await fetch(`https://kz.srrlab.ru/person/?id=${id}`);
@@ -666,9 +697,9 @@ export const showPerson = async (id) => {
   }));
 
   let movies = load.div('person-movies');
-  MovieTiles.map((tile) => { if (tile) movies.append(tile) } );
+  MovieTiles.map((tile) => { if (tile) { movies.append(tile); setTimeout(() => { tile.style.opacity = '1';}, 10) }});
   let tvs = load.div('person-tvs');
-  TvTiles.map((tile) => { if (tile) tvs.append(tile) } );
+  TvTiles.map((tile) => { if (tile) { tvs.append(tile); setTimeout(() => { tile.style.opacity = '1';}, 10) }});
 
   let content = await Promise.all([poster, name, birthday, biography, movies, tvs]);
 
@@ -679,6 +710,97 @@ export const showPerson = async (id) => {
   content.map((el) => { if (el) main.append(el) });
 }
 
+// Start page -----------------------------------------------------------------------------------
+const startPageContainer = async (type) => {
+
+  document.getElementById('start-container').innerHTML = '';
+  let leftBorder = document.createElement('div'); leftBorder.classList.add('start-left-border');
+  let rightBorder = document.createElement('div'); rightBorder.classList.add('start-right-border');
+
+  let popularMoviesContainer = load.div(`start-popular start-${type}`);
+  for (let i = 0; i < 19; i++) {
+    let ani = document.createElement('div'); ani.setAttribute('class', 'tile no-select loading');
+    ani.innerHTML = '<div class="poster"></div><div class="titles"></div><div class="release-date"></div><div class="votes"></div>';
+    popularMoviesContainer.append(ani);
+  }
+
+  let topMoviesContainer = load.div(`start-top start-${type}`);
+  for (let i = 0; i < 19; i++) {
+    let ani = document.createElement('div'); ani.setAttribute('class', 'tile no-select loading');
+    ani.innerHTML = '<div class="poster"></div><div class="titles"></div><div class="release-date"></div><div class="votes"></div>';
+    topMoviesContainer.append(ani);
+  }
+ 
+  document.getElementById('start-container').append(leftBorder, rightBorder, popularMoviesContainer, topMoviesContainer);
+
+  // -------------------------------
+
+  let responsePopularMovies = await fetch(`https://kz.srrlab.ru/list/?t=${type}&l=popular`);
+  const popularMovies = await responsePopularMovies.json();
+
+  let tilesPopular = await Promise.all(popularMovies.results.map( async (movie) => {
+    let tile = document.createElement('div'); 
+    tile.setAttribute('class','tile no-select');
+
+    let cont = await tileContent(movie, type);
+    if (!cont[0]) return;
+    cont.map((el) => { if (el) tile.append(el) } );
+
+    return tile;
+  }));
+
+
+  // -------------------------------
+
+  let responsetopMovies = await fetch(`https://kz.srrlab.ru/list/?t=${type}&l=top_rated`);
+  const topMovies = await responsetopMovies.json();
+
+  let tilesTop = await Promise.all(topMovies.results.map( async (movie) => {
+    let tile = document.createElement('div'); 
+    tile.setAttribute('class','tile no-select');
+
+    let cont = await tileContent(movie, type);
+    if (!cont[0]) return;
+    cont.map((el) => { if (el) tile.append(el) } );
+
+    return tile;
+  }));
+
+  popularMoviesContainer.innerHTML = '';
+  tilesPopular.map( el => { if (el) {
+    popularMoviesContainer.append(el);
+    setTimeout(() => {
+      el.style.opacity = '1';
+    }, 10)
+  }});
+
+  topMoviesContainer.innerHTML = '';
+  tilesTop.map( el => {if (el) {
+    topMoviesContainer.append(el);
+    setTimeout(() => {
+      el.style.opacity = '1';
+    }, 10)
+  }});
+
+}
+const startPage = async () => {
+  main.innerHTML = ''; main.setAttribute('class', 'start');
+  let titleOverlay = load.div('start-title-overlay');
+  let titleContainer = load.div('start-title-container');
+
+    let header = load.text('Добро пожаловать');
+    let subHeader = load.text('на русскоязычный неоффициальный сайт');
+    let tmdbLogo = new Image(); tmdbLogo.src = '/IMG/official_tmdb_logo.svg';
+    let logoSubHeader = load.text('Миллионы фильмов, сериалов и людей');
+    (await Promise.all([header, subHeader, tmdbLogo, logoSubHeader])).map(el => titleContainer.append(el));
+  
+  let startContainer = document.createElement('div'); startContainer.id = 'start-container';
+
+  [titleContainer, titleOverlay, startContainer].map(el => main.append(el));
+
+}
+
 // Browser history   
 // history.pushState( btn, '', btn );     
 // window.onpopstate = () => { loadMain(history.state); };
+// backgroudPosters();

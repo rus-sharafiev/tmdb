@@ -27,7 +27,7 @@ export const image = async (path, cls) => {
         var url = proxyImage(`https://image.tmdb.org/t/p/w500${path}`);
       } else if (cls == 'poster') {
         var url = proxyImage(`https://image.tmdb.org/t/p/w342${path}`);
-      } else if (cls == 'collection-poster' || cls == 'movie-actor-img' || cls == 'movie-collection-poster') {
+      } else if (cls == 'collection-poster' || cls == 'movie-actor-img' || cls == 'movie-collection-poster' || cls == 'test-img') {
         var url = proxyImage(`https://image.tmdb.org/t/p/w154${path}`);
       } else {
         var url = proxyImage(`https://image.tmdb.org/t/p/original${path}`);
@@ -269,6 +269,9 @@ export const fetchAnimation = async () => {
   ani.innerHTML = '<div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>';
   ani.style.top = `${document.querySelector('main').scrollTop}px`;
   document.body.querySelector('main').append(ani);
+  setTimeout(() => {
+    ani.style.opacity = '1';
+  }, 1);
 }
 
 // TV season tile and overlay with episodes -----------------------------------------
@@ -367,6 +370,7 @@ export const movieCollection = async (collection) => {
 
     let parts = div('no-select', 'parts-container');
     parts.append(closeBtn);
+    tile.append(parts);
 
     let partTiles = await Promise.all(collections.parts.map( async (part) => {
       let partTile = div('tile no-select'); 
@@ -389,11 +393,8 @@ export const movieCollection = async (collection) => {
       return partTile;
     }));
   
-    partTiles.map( (el) => parts.append(el) );
-    tile.append(parts);
-    setTimeout(() => {
-      parts.style.opacity = "1";
-    }, "100")
+    partTiles.map((tile) => { if (tile) { parts.append(tile); setTimeout(() => { tile.style.opacity = '1';}, 10) }});
+
   }
 
   (await Promise.all([poster, title, tileOverlay])).map((el) => { if (el) tile.append(el) } );
