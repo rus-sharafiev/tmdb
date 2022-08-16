@@ -1,5 +1,5 @@
 import '/DEV/vibrant.min.js';
-import { showMovie, showTv, showPerson, showList } from '/DEV/app.js';
+import { showMovie, showTv, showPerson, discover } from '/DEV/app.js';
 
 // Div ------------------------------------------------------------------------------
 export const div = (cls, id, container) => {
@@ -249,8 +249,10 @@ export const actor = async (img, name, character, id) => {
 
   (await Promise.all([i, n, c])).map( el => cont.append(el));
 
-  cont.onclick = () => showPerson(id);
-
+  cont.onclick = () => {
+    showPerson(id);
+    history.pushState( { type: 'person', id: id}, '', '/person#' + id );
+  }
   return cont;
 }
 
@@ -387,6 +389,7 @@ export const movieCollection = async (collection) => {
           tile.classList.remove('parts');
           document.querySelector('main').style = null;
           showMovie(part.id).catch( (error) => main.innerHTML = `${error}`);
+          history.pushState( { type: 'movie', id: part.id}, '', '/movie#' + part.id );
         }
         (await Promise.all([poster, titles, releaseDate, voteAverage, tileOverlay])).map((el) => { if (el) partTile.append(el) } );
 
@@ -528,10 +531,32 @@ export const filters = async (type) => {
   let btn = div('', 'filters-submit-btn');
   btn.innerHTML = 'Подобрать';
   btn.onclick = () => {
-    showList('discover', type);
+    discover('discover', type);
     btn.classList.remove('ready');
+    history.pushState( { 
+      type: type,
+      sort: sort.value, 
+      order: order.value,
+      minRating: minRating.value,
+      maxRating: maxRating.value,
+      minVotes: minVotes.value,
+      maxVotes: maxVotes.value,
+      minYear: minYear.value,
+      maxYear: maxYear.value
+    }, '', '/' + type + '?discover');
   }
 
   ([sortCont, ratingCont, votesCont, yearCont, btn]).map( (el) => cont.append(el));
   return cont;
+}
+
+export const setFilters = (sort, order, minRating, maxRating, minVotes, maxVotes, minDate, maxDate) => {
+  if (sort) document.getElementById('filters-sort').value = sort;
+  if (order) document.getElementById('filters-order').value = order;
+  if (minRating) document.getElementById('min-rating').value = minRating;
+  if (maxRating) document.getElementById('max-rating').value = maxRating;
+  if (minVotes) document.getElementById('min-votes').value = minVotes;
+  if (maxVotes) document.getElementById('max-votes').value = maxVotes;
+  if (minDate) document.getElementById('min-year').value = minDate;
+  if (maxDate) document.getElementById('max-year').value = maxDate;
 }

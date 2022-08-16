@@ -14,9 +14,6 @@ main.start {
     grid: 230px 810px / 200px 1fr;
     gap: 10px 0;
 }
-main.start + header > .logo {
-    display: none;
-}
 main.start + header > form {
     margin: 430px 20px 0;
 }
@@ -90,7 +87,7 @@ main.start > div > div > .tile {
     display: grid;
     grid: 237px 27px 30px 40px / 60px 117px;
     opacity: 0;
-    transition: opacity 0.3s linear;
+    transition: opacity 0.3s cubic-bezier(0.23, 1, 0.320, 1);
 }
 main.start > div > div > .tile > .poster {
     width: 180px;

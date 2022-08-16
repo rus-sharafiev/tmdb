@@ -107,3 +107,7 @@
     width: 150px;
     height: 225px;
 }
+.person-movies > .tile > .release-date,
+.person-tvs > .tile > .release-date {
+    display: none;
+}

@@ -22,37 +22,50 @@ document.body.onload = () => {
     .then( (buttons) => buttons.map(btn => nav.append(btn)))
     .then( () => {
       switch (true) {
-        case (window.location.pathname == '/') : 
+        case (window.location.pathname == '/'):
+          history.pushState( {}, '', '/movie');
           document.getElementById('movie').classList.add('nav-active'); 
           document.querySelector('input').placeholder = 'Поиск фильмов';
           document.querySelector('input').setCustomValidity('Введите название фильма');
           movieMenuList();
-          startPageContainer('movie'); break;
-        case (window.location.pathname == '/movie') : 
+          startPageContainer('movie');
+          break;
+        case (window.location.pathname == '/movie'): 
           document.getElementById('movie').classList.add('nav-active');
           document.querySelector('input').placeholder = 'Поиск фильмов';
           document.querySelector('input').setCustomValidity('Введите название фильма');
           movieMenuList();
-          startPageContainer('movie'); break;
-        case (window.location.pathname == '/tv') : 
+          if (window.location.hash) {
+            showMovie(window.location.hash.substring(1));
+          } else {
+            startPageContainer('movie');
+          }
+          break;
+        case (window.location.pathname == '/tv'): 
           document.getElementById('tv').classList.add('nav-active');
           document.querySelector('input').placeholder = 'Поиск сериалов';
           document.querySelector('input').setCustomValidity('Введите название сериала');
           tvMenuList();
-          startPageContainer('tv'); break;
-        case (window.location.pathname == '/person') : 
+          if (window.location.hash) {
+            showTv(window.location.hash.substring(1));
+          } else {
+            startPageContainer('tv');
+          }
+          break;
+        case (window.location.pathname == '/person'): 
           document.getElementById('person').classList.add('nav-active');
           document.querySelector('input').placeholder = 'Поиск знаменитостей';
           document.querySelector('input').setCustomValidity('Введите имя знаменитости');
-          personMenuList(); break;
+          personMenuList(); 
+          if (window.location.hash) {
+            showPerson(window.location.hash.substring(1));
+          } else {
+            //startPageContainer('tv');
+          }
+          break;
       }
   });
   startPage();
-  // searchMedia('друзья', 'movie').catch( (error) => main.innerHTML = `${error}`);
-  // showMovie(19995).catch( (error) => main.innerHTML = `${error}`);
-  // showTv(71912).catch( (error) => main.innerHTML = `${error}`);
-  // showPerson(72129).catch( (error) => main.innerHTML = `${error}`);
-  // showList('discover', 'movie');
 
 }
 
@@ -61,7 +74,9 @@ const createHeader = async () => {
   const logo = new Image(); logo.src = '/IMG/logo.svg'; logo.setAttribute('class', 'logo');
   const logoOverlay = load.div('logo-overlay');
   logoOverlay.onclick = () => {
-    startPage().then(() => startPageContainer(document.getElementsByClassName('nav-active')[0].id));
+    let active = document.getElementsByClassName('nav-active')[0].id;
+    history.pushState( { type: active }, '', '/' + active);
+    startPage().then(() => startPageContainer(active));
     searchFormInput.value = '';
     searchFormYear.value = '';
     searchFormYearLabel.style.display = 'none';
@@ -166,6 +181,7 @@ const createHeader = async () => {
       searchFormYear.blur();
       let active = document.getElementsByClassName('nav-active');
       searchMedia(searchData.get('query'), searchData.get('year'), active[0].id).catch( (error) => main.innerHTML = `${error}`);
+      history.pushState( { type: active[0].id, search: searchData.get('query'), year: searchData.get('year') }, '', '/' + active[0].id + '?search=' + searchData.get('query')); 
     }
 
   return Promise.all([logo, logoOverlay, searchOverlay, searchForm]);
@@ -191,7 +207,7 @@ const navButton = async (txt, symb, id) => {
         };
     }
     btn.classList.add('nav-active');
-    history.pushState( btn.id, '', btn.id );
+    history.pushState( { type: btn.id }, '', '/' + btn.id );
     switch (btn.id) {
       case 'movie': document.querySelector('input').placeholder = 'Поиск фильмов'; document.querySelector('input').setCustomValidity('Введите название фильма'); movieMenuList(); break;
       case 'tv': document.querySelector('input').placeholder = 'Поиск сериалов'; document.querySelector('input').setCustomValidity('Введите название сериала'); tvMenuList(); break;
@@ -200,6 +216,7 @@ const navButton = async (txt, symb, id) => {
     if (document.querySelector('input').value != '') { 
       const searchData = new FormData(document.getElementById('search-form'));  
       searchMedia(searchData.get('query'), searchData.get('year'), btn.id).catch( () => main.innerHTML = '¯\_(ツ)_/¯');
+      history.pushState( { type: btn.id, search: searchData.get('query'), year: searchData.get('year') }, '', '/' + btn.id + '?search=' + searchData.get('query')); 
     } else if (main.classList.contains('start')) {
       startPageContainer(btn.id);
     }
@@ -262,9 +279,18 @@ const tileContent = async (media, type) => {
 
   tileOverlay.onclick = () => {
     switch (type) {
-      case 'movie': showMovie(media.id).catch( (error) => main.innerHTML = `${error}`); break;
-      case 'tv': showTv(media.id).catch( (error) => main.innerHTML = `${error}`); break;
-      case 'person': showPerson(media.id).catch( (error) => main.innerHTML = `${error}`); break;
+      case 'movie': 
+        showMovie(media.id).catch( (error) => main.innerHTML = `${error}`);
+        history.pushState( { type: 'movie', id: media.id}, '', '/movie#' + media.id ); 
+        break;
+      case 'tv': 
+        showTv(media.id).catch( (error) => main.innerHTML = `${error}`);
+        history.pushState( { type: 'tv', id: media.id}, '', '/tv#' + media.id );
+        break;
+      case 'person': 
+        showPerson(media.id).catch( (error) => main.innerHTML = `${error}`);
+        history.pushState( { type: 'person', id: media.id}, '', '/person#' + media.id );
+        break;
   }}
 
   return Promise.all([poster, titles, releaseDate, voteAverage, tileOverlay]);
@@ -330,7 +356,7 @@ const searchMedia = async (query, year, type, page) => {
           loadMore.innerHTML = '<div class="lds-default"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>';
           let nextpage = page + 1;
           main.onscroll = () => {};
-          searchMedia(query, year, type, nextpage);
+          searchMedia(query, year, type, nextpage); 
         }  
       }
     } else { main.onscroll = () => {} }
@@ -338,6 +364,7 @@ const searchMedia = async (query, year, type, page) => {
 }
 
 // Discover ------------------------------------------------------------------------------------
+// Movie lists
 const movieMenuList = async () => {
   let cont = document.getElementById('nav-menu-list');
   cont.innerHTML = '';
@@ -350,11 +377,13 @@ const movieMenuList = async () => {
   cont.childNodes.forEach(element => {
     if (element == filters) return;
     element.onclick = () => {
-      showList('list', 'movie', element.id);
+      discover('list', 'movie', element.id);
+      history.pushState( { type: 'movie', list: element.id}, '', '/movie?list=' + element.id );
     }
   });
 }
 
+// Movie lists
 const tvMenuList = async () => {
   let cont = document.getElementById('nav-menu-list');
   cont.innerHTML = '';
@@ -367,18 +396,21 @@ const tvMenuList = async () => {
   cont.childNodes.forEach(element => {
     if (element == filters) return;
     element.onclick = () => {
-      showList('list', 'tv', element.id);
+      discover('list', 'tv', element.id);
+      history.pushState( { type: 'tv', list: element.id}, '', '/tv?list=' + element.id );
     }
   });
 
 }
 
+// Movie lists
 const personMenuList = async () => {
   let cont = document.getElementById('nav-menu-list');
   cont.innerHTML = '';
 }
 
-export const showList = async (a, type, list, page) => {
+// Discover
+export const discover = async (a, type, list, page) => {
 
   if (main.classList.contains('start')) {
     main.classList.remove('start');
@@ -457,7 +489,7 @@ export const showList = async (a, type, list, page) => {
           loadMore.innerHTML = '<div class="lds-default"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>';
           let nextpage = page + 1;
           main.onscroll = () => {};
-          showList(a, type, list, nextpage);
+          discover(a, type, list, nextpage);
         }  
       }
     } else { main.onscroll = () => {} }
@@ -549,13 +581,15 @@ export const showMovie = async (id) => {
       let voteAverage = load.votesCircle(movie.vote_average, 25, 30, 'votes', movie.vote_count);
       let tileOverlay = document.createElement('div'); 
         tileOverlay.setAttribute('class','tile-overlay');
-        tileOverlay.onclick = () => showMovie(movie.id).catch( (error) => main.innerHTML = `${error}`);
+        tileOverlay.onclick = () => {
+          showMovie(movie.id).catch( (error) => main.innerHTML = `${error}`);
+          history.pushState( { type: 'movie', id: movie.id}, '', '/movie#' + movie.id );
+        }
     (await Promise.all([poster, titles, voteAverage, tileOverlay])).map((el) => { if (el) tile.append(el) } );
     return tile;
   }));
 
   tiles.map((tile) => { if (tile) { suggested.append(tile); setTimeout(() => { tile.style.opacity = '1';}, 10) }});
-
 }
 
 // TV -------------------------------------------------------------------------------------------
@@ -567,7 +601,7 @@ export const showTv = async (id) => {
   load.fetchAnimation(); main.style.overflow = 'hidden';
 
   const response = await fetch(`https://kz.srrlab.ru/tv/?id=${id}`);
-  const tv = await response.json();    console.log(tv);
+  const tv = await response.json();    //console.log(tv);
   if (tv.id == 'error') { main.innerHTML = `Ошибка PHP cURL запроса: ${tv.error}`; return; }
 
   let style = load.vibrantStyles(tv.poster_path);
@@ -638,7 +672,10 @@ export const showTv = async (id) => {
       let voteAverage = load.votesCircle(tv.vote_average, 25, 30, 'votes', tv.vote_count);
       let tileOverlay = document.createElement('div'); 
         tileOverlay.setAttribute('class', 'tile-overlay');
-        tileOverlay.onclick = () => showTv(tv.id).catch( (error) => main.innerHTML = `${error}`);
+        tileOverlay.onclick = () => {
+          showTv(tv.id).catch( (error) => main.innerHTML = `${error}`); 
+          history.pushState( { type: 'tv', id: tv.id}, '', '/tv#' + tv.id );
+        }
     (await Promise.all([poster, title, voteAverage, tileOverlay])).map((el) => { if (el) tile.append(el) } );
     return tile;
   }));
@@ -646,7 +683,7 @@ export const showTv = async (id) => {
   tiles.map((tile) => { if (tile) { suggested.append(tile); setTimeout(() => { tile.style.opacity = '1';}, 10) }});
 }
 
-// People ---------------------------------------------------------------------------------------
+// Person ---------------------------------------------------------------------------------------
 export const showPerson = async (id) => {
   if (main.classList.contains('start')) {
     main.classList.remove('start');
@@ -689,7 +726,7 @@ export const showPerson = async (id) => {
     let tile = document.createElement('div'); 
     tile.setAttribute('class','tile no-select');
 
-    let cont = await tileContent(movie, 'movie');
+    let cont = await tileContent(movie, 'tv');
     if (cont[3].classList.contains('low-votes')) return; // remove movies with low votes 
     cont.map((el) => { if (el) tile.append(el) } );
 
@@ -800,7 +837,43 @@ const startPage = async () => {
 
 }
 
-// Browser history   
-// history.pushState( btn, '', btn );     
-// window.onpopstate = () => { loadMain(history.state); };
-// backgroudPosters();
+// Browser history
+window.onpopstate = () => {
+  console.log(history.state);
+  switch (history.state.type) {
+    case 'movie':
+      if (history.state.id) {
+        showMovie(history.state.id);
+      } else if (history.state.search) {
+        searchMedia(history.state.search, history.state.year, history.state.type);
+      } else if (history.state.list) {
+        discover('list', 'movie', history.state.list);
+      } else if (window.location.search === '?discover') {
+        load.setFilters(history.state.sort, history.state.order, history.state.minRating, history.state.maxRating, history.state.minVotes, history.state.maxVotes, history.state.minDate, history.state.maxDate);
+        discover('discover', 'movie');
+      } else {
+        startPage().then(() => startPageContainer(history.state.type));
+      } break;
+    case 'tv':
+      if (history.state.id) {
+        showTv(history.state.id);
+      } else if (history.state.search) {
+        searchMedia(history.state.search, history.state.year, history.state.type);
+      } else if (history.state.list) {
+        discover('list', 'tv', history.state.list);
+      } else if (window.location.search === '?discover') {
+        load.setFilters(history.state.sort, history.state.order, history.state.minRating, history.state.maxRating, history.state.minVotes, history.state.maxVotes, history.state.minDate, history.state.maxDate);
+        discover('discover', 'tv');
+      } else {
+        startPage().then(() => startPageContainer(history.state.type));
+      } break;
+    case 'person':
+      if (history.state.id) {
+        showPerson(history.state.id);
+      } else if (history.state.search) {
+        searchMedia(history.state.search, history.state.year, history.state.type);
+      } else {
+        startPage().then(() => startPageContainer(history.state.type));
+      } break;
+  }
+};
