@@ -11,8 +11,7 @@ main.start {
     var(--md-sys-color-background);
 
     display: grid;
-    grid: 230px 810px / 200px 1fr;
-    gap: 10px 0;
+    grid: 230px 820px / 200px 1fr;
 }
 main.start + header > form {
     margin: 430px 20px 0;
@@ -26,7 +25,7 @@ main.start + header > form > input#query {
     align-self: start;
 
     width: 100%;
-    height: 272px;
+    height: calc(100% + 42px);
     margin: -42px 0 0;
     border-radius: 18px;
     background: linear-gradient(to right, 
@@ -77,8 +76,8 @@ main.start + header > form > input#query {
     grid-row: 2 / 3;
 
     display: grid;
-    grid: 400px 400px / 1fr;
-    gap: 10px;
+    grid: 30px 380px 30px 380px / 1fr;
+    position: relative;
 }
 main.start > div > div > .tile.loading {
     opacity: 1;
@@ -87,11 +86,7 @@ main.start > div > div > .tile {
     display: grid;
     grid: 237px 27px 30px 40px / 60px 117px;
     opacity: 0;
-    transition: opacity 0.3s cubic-bezier(0.23, 1, 0.320, 1);
-}
-main.start > div > div > .tile > .poster {
-    width: 180px;
-    height: 270px;
+    transition: opacity 0.2s ease-in;
 }
 
 .start-popular,
@@ -99,40 +94,26 @@ main.start > div > div > .tile > .poster {
     grid-column: 1 / -1;
     position: relative;
 
-    height: 400px;
+    height: 380px;
     overflow: overlay;
-    padding: 35px 10px 10px;
+    padding: 10px;
 
     display: grid;
     grid-template-columns: repeat(20, 190px);
     justify-content: start;
     align-items: start;
 }
-
-.start-popular {
+.start-popular-title {
     grid-row: 1 / 2;
 }
-.start-top {
+.start-popular {
     grid-row: 2 / 3;
 }
-.start-popular::before,
-.start-top::before {
-    position: absolute;
-    margin: 5px 0 0 20px;
-    font-size: 24px;
-    font-weight: 400;
+.start-top-title {
+    grid-row: 3 / 4;
 }
-.start-popular.start-movie::before {
-    content: 'Популярные фильмы';
-}
-.start-top.start-movie::before {
-    content: 'Топ фильмов';
-}
-.start-popular.start-tv::before {
-    content: 'Популярные сериалы';
-}
-.start-top.start-tv::before {
-    content: 'Топ сериалов';
+.start-top {
+    grid-row: 4 / 5;
 }
 .start-right-border,
 .start-left-border {
@@ -142,9 +123,30 @@ main.start > div > div > .tile > .poster {
     z-index: 10;
 }
 .start-right-border {
-    right: 8px;
+    right: 0;
     background: linear-gradient(to left , #f1f1f5, transparent)
 }
 .start-left-border {
     background: linear-gradient(to right , #f1f1f5, transparent)
+}
+.start-top-title,
+.start-popular-title {
+    padding: 10px 0 0 20px;
+    font-size: 20px;
+    font-weight: 700;
+    width: 400px;
+    color: rgba(var(--md-sys-color-primary--rgb), 0.8);
+    transition: color 0.1s ease-in-out;
+}
+.start-top-title:hover,
+.start-popular-title:hover {
+    cursor: pointer;
+    color: var(--md-sys-color-primary);
+}
+.start-top-title:hover::after,
+.start-popular-title:hover::after {
+    content: 'показать все -->';
+    padding-left: 10px;
+    font-size: 16px;
+    color: rgba(var(--md-sys-color-primary--rgb), 0.5);
 }

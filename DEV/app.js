@@ -11,11 +11,11 @@ import * as load from '/DEV/modules.js';
 const header = document.createElement('header');
 const nav = document.createElement('nav');
 const main = document.createElement('main');
-const footer = document.createElement('footer');
+const test = document.createElement('div'); test.classList.add('test-div'); 
 
 // Load page
 document.body.onload = () => {
-  document.body.append(main, header, nav, footer); 
+  document.body.append(main, header, nav, test);
   createHeader()
     .then( (elemets) => elemets.map(el => header.append(el)));
   createNav()
@@ -23,14 +23,14 @@ document.body.onload = () => {
     .then( () => {
       switch (true) {
         case (window.location.pathname == '/'):
-          history.pushState( {}, '', '/movie');
+          history.pushState( { type: 'movie' }, '', '/movie');
           document.getElementById('movie').classList.add('nav-active'); 
           document.querySelector('input').placeholder = 'Поиск фильмов';
           document.querySelector('input').setCustomValidity('Введите название фильма');
           movieMenuList();
           startPageContainer('movie');
           break;
-        case (window.location.pathname == '/movie'): 
+        case (window.location.pathname == '/movie'):
           document.getElementById('movie').classList.add('nav-active');
           document.querySelector('input').placeholder = 'Поиск фильмов';
           document.querySelector('input').setCustomValidity('Введите название фильма');
@@ -39,6 +39,7 @@ document.body.onload = () => {
             showMovie(window.location.hash.substring(1));
           } else {
             startPageContainer('movie');
+            history.pushState( { type: 'movie' }, '', '/movie');
           }
           break;
         case (window.location.pathname == '/tv'): 
@@ -50,6 +51,7 @@ document.body.onload = () => {
             showTv(window.location.hash.substring(1));
           } else {
             startPageContainer('tv');
+            history.pushState( { type: 'tv' }, '', '/tv');
           }
           break;
         case (window.location.pathname == '/person'): 
@@ -60,7 +62,8 @@ document.body.onload = () => {
           if (window.location.hash) {
             showPerson(window.location.hash.substring(1));
           } else {
-            //startPageContainer('tv');
+            startPageContainer('person');
+            history.pushState( { type: 'person' }, '', '/person');
           }
           break;
       }
@@ -91,6 +94,7 @@ const createHeader = async () => {
       searchFormInput.id = 'query'; 
       searchFormInput.type = 'search'; 
       searchFormInput.name = 'query';
+      searchFormInput.autocomplete = 'off';
       searchFormInput.required = true;
       searchFormInput.onkeyup = () => {
         if (searchFormInput.value != '') {
@@ -110,25 +114,28 @@ const createHeader = async () => {
         searchOverlay.style.display = 'block';
         setTimeout(() => {
           searchOverlay.style.opacity = "1";
-        }, "10")
+        }, 1);
       }
       searchFormInput.onblur = () => {
         setTimeout(() => {
-          if ((document.activeElement.id != 'year')) {
+          if (document.activeElement.id != 'query') {
+            if (document.activeElement.id == 'year') return;
             searchOverlay.style.opacity = "0";
-              setTimeout(() => {
-                searchOverlay.style.display = 'none';
-              }, "300")
+            setTimeout(() => {
+              searchOverlay.style.display = 'none';
+            }, 100);
           }
-        }, '10');
+        }, 100);
       }
     const searchFormYear = document.createElement('input');
       searchFormYear.id = 'year'; 
-      searchFormYear.type = 'text'; 
+      searchFormYear.type = 'number'; 
       searchFormYear.name = 'year';
+      searchFormYear.autocomplete = 'off';
       searchFormYear.placeholder = 'любой';
       searchFormYear.style.display = 'none';
     const searchFormYearLabel = document.createElement('label');
+      searchFormYearLabel.id = 'year-label';
       searchFormYearLabel.for = 'year';
       searchFormYearLabel.innerHTML = 'год';
       searchFormYearLabel.style.display = 'none';
@@ -136,12 +143,13 @@ const createHeader = async () => {
       searchFormYear.onblur = () => {
         setTimeout(() => {
           if (document.activeElement.id != 'query') {
+            if (document.activeElement.id == 'year') return;
             searchOverlay.style.opacity = "0";
             setTimeout(() => {
               searchOverlay.style.display = 'none';
-            }, "300")
+            }, 100);
           }
-        }, '10');
+        }, 100);
       }
 
     const searchFormClrBtn = document.createElement('button');
@@ -151,13 +159,13 @@ const createHeader = async () => {
       searchFormClrBtn.style.display = 'none'
       searchFormClrBtn.onclick = (event) => {
         event.preventDefault();
+        searchFormInput.focus();
         searchFormInput.value = '';
         searchFormYear.value = '';
         searchFormYearLabel.style.display = 'none';
         searchFormYear.style.display = 'none';
         searchFormClrBtn.style.display = 'none';
         searchFormInput.classList.remove('text-inside');
-        searchFormInput.focus();
       }
 
     const searchFormSbmBtn = document.createElement('button'); 
@@ -219,6 +227,8 @@ const navButton = async (txt, symb, id) => {
       history.pushState( { type: btn.id, search: searchData.get('query'), year: searchData.get('year') }, '', '/' + btn.id + '?search=' + searchData.get('query')); 
     } else if (main.classList.contains('start')) {
       startPageContainer(btn.id);
+    } else {
+      startPage().then(() => startPageContainer(btn.id));
     }
   };
   return btn;
@@ -278,6 +288,7 @@ const tileContent = async (media, type) => {
   let tileOverlay = document.createElement('div'); tileOverlay.setAttribute('class','tile-overlay');
 
   tileOverlay.onclick = () => {
+    load.clearSearch();
     switch (type) {
       case 'movie': 
         showMovie(media.id).catch( (error) => main.innerHTML = `${error}`);
@@ -351,15 +362,28 @@ const searchMedia = async (query, year, type, page) => {
       (await Promise.all([iconLoadMore, textLoadMore])).map((el) => { if (el) loadMore.append(el)});
       main.append(loadMore);
 
-      main.onscroll = () => {
+      let loadNextPage = () => {
+        loadMore.innerHTML = '<div class="lds-default"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>';
+        let nextpage = page + 1;
+        searchMedia(query, year, type, nextpage); 
+      }     
+
+      let onScroll = () => {
         if (main.classList.contains('search') && ((main.offsetHeight + main.scrollTop + 400) >= main.scrollHeight)) {
-          loadMore.innerHTML = '<div class="lds-default"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>';
-          let nextpage = page + 1;
-          main.onscroll = () => {};
-          searchMedia(query, year, type, nextpage); 
-        }  
+          loadNextPage();
+          main.removeEventListener('scroll', onScroll);
+        }
       }
-    } else { main.onscroll = () => {} }
+      main.addEventListener('scroll', onScroll);
+
+      let onTouchmove = () => { 
+        if (window.pageYOffset > main.offsetHeight - 3280) {
+          loadNextPage();
+          main.removeEventListener('touchmove', onTouchmove);
+        } 
+      }
+      main.addEventListener('touchmove', onTouchmove);
+    }
   }
 }
 
@@ -379,11 +403,13 @@ const movieMenuList = async () => {
     element.onclick = () => {
       discover('list', 'movie', element.id);
       history.pushState( { type: 'movie', list: element.id}, '', '/movie?list=' + element.id );
+      console.log(history.state);
+      document.getElementById('menu').click();
     }
   });
 }
 
-// Movie lists
+// Tv lists
 const tvMenuList = async () => {
   let cont = document.getElementById('nav-menu-list');
   cont.innerHTML = '';
@@ -398,12 +424,13 @@ const tvMenuList = async () => {
     element.onclick = () => {
       discover('list', 'tv', element.id);
       history.pushState( { type: 'tv', list: element.id}, '', '/tv?list=' + element.id );
+      document.getElementById('menu').click();
     }
   });
 
 }
 
-// Movie lists
+// Person lists
 const personMenuList = async () => {
   let cont = document.getElementById('nav-menu-list');
   cont.innerHTML = '';
@@ -484,15 +511,28 @@ export const discover = async (a, type, list, page) => {
       (await Promise.all([iconLoadMore, textLoadMore])).map((el) => { if (el) loadMore.append(el)});
       main.append(loadMore);
 
-      main.onscroll = () => {
+      let loadNextPage = () => {
+        loadMore.innerHTML = '<div class="lds-default"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>';
+        let nextpage = page + 1;
+        discover(a, type, list, nextpage);
+      }     
+
+      let onScroll = () => {
         if (main.classList.contains('search') && ((main.offsetHeight + main.scrollTop + 400) >= main.scrollHeight)) {
-          loadMore.innerHTML = '<div class="lds-default"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>';
-          let nextpage = page + 1;
-          main.onscroll = () => {};
-          discover(a, type, list, nextpage);
-        }  
+          loadNextPage();
+          main.removeEventListener('scroll', onScroll);
+        }
       }
-    } else { main.onscroll = () => {} }
+      main.addEventListener('scroll', onScroll);
+
+      let onTouchmove = () => { 
+        if (window.pageYOffset > main.offsetHeight - 3280) {
+          loadNextPage();
+          main.removeEventListener('touchmove', onTouchmove);
+        } 
+      }
+      main.addEventListener('touchmove', onTouchmove);
+    }
   }
 }
 
@@ -727,7 +767,7 @@ export const showPerson = async (id) => {
     tile.setAttribute('class','tile no-select');
 
     let cont = await tileContent(movie, 'tv');
-    if (cont[3].classList.contains('low-votes')) return; // remove movies with low votes 
+    if (cont[3].classList.contains('low-votes')) return; // remove tvs with low votes 
     cont.map((el) => { if (el) tile.append(el) } );
 
     return tile;
@@ -750,32 +790,50 @@ export const showPerson = async (id) => {
 // Start page -----------------------------------------------------------------------------------
 const startPageContainer = async (type) => {
 
+  switch (type) {
+    case 'movie': var popularTitle = 'Популярные фильмы'; var topTitle = 'Топ фильмов'; break;
+    case 'tv': var popularTitle = 'Популярные сериалы'; var topTitle = 'Топ сериалов'; break;
+    case 'person': var popularTitle = 'Популярные люди'; break;
+  }
+
   document.getElementById('start-container').innerHTML = '';
   let leftBorder = document.createElement('div'); leftBorder.classList.add('start-left-border');
   let rightBorder = document.createElement('div'); rightBorder.classList.add('start-right-border');
+  let popularContainerTitle = load.div(`start-popular-title`); popularContainerTitle.innerHTML = popularTitle;
+  popularContainerTitle.onclick = () => {
+    discover('list', type, 'popular');
+    history.pushState( { type: type, list: 'popular'}, '', '/' + type + '?list=popular');
+  }
+  var popularContainer = load.div(`start-popular`);
+  document.getElementById('start-container').append(leftBorder, rightBorder, popularContainerTitle, popularContainer);
 
-  let popularMoviesContainer = load.div(`start-popular start-${type}`);
   for (let i = 0; i < 19; i++) {
     let ani = document.createElement('div'); ani.setAttribute('class', 'tile no-select loading');
     ani.innerHTML = '<div class="poster"></div><div class="titles"></div><div class="release-date"></div><div class="votes"></div>';
-    popularMoviesContainer.append(ani);
+    popularContainer.append(ani);
   }
 
-  let topMoviesContainer = load.div(`start-top start-${type}`);
-  for (let i = 0; i < 19; i++) {
-    let ani = document.createElement('div'); ani.setAttribute('class', 'tile no-select loading');
-    ani.innerHTML = '<div class="poster"></div><div class="titles"></div><div class="release-date"></div><div class="votes"></div>';
-    topMoviesContainer.append(ani);
+  if (type != 'person') { // Person category contains one list only -------------------------------
+  
+    let topContainerTitle = load.div(`start-top-title`); topContainerTitle.innerHTML = topTitle;
+    topContainerTitle.onclick = () => {
+      discover('list', type, 'top_rated');
+      history.pushState( { type: type, list: 'top_rated'}, '', '/' + type + '?list=top_rated');
+    }
+    var topContainer = load.div(`start-top`);
+    document.getElementById('start-container').append(topContainerTitle, topContainer);
+  
+    for (let i = 0; i < 19; i++) {
+      let ani = document.createElement('div'); ani.setAttribute('class', 'tile no-select loading');
+      ani.innerHTML = '<div class="poster"></div><div class="titles"></div><div class="release-date"></div><div class="votes"></div>';
+      topContainer.append(ani);
+    }
   }
- 
-  document.getElementById('start-container').append(leftBorder, rightBorder, popularMoviesContainer, topMoviesContainer);
 
-  // -------------------------------
+  let responsePopular = await fetch(`https://kz.srrlab.ru/list/?t=${type}&l=popular`);
+  const popular = await responsePopular.json();
 
-  let responsePopularMovies = await fetch(`https://kz.srrlab.ru/list/?t=${type}&l=popular`);
-  const popularMovies = await responsePopularMovies.json();
-
-  let tilesPopular = await Promise.all(popularMovies.results.map( async (movie) => {
+  let tilesPopular = await Promise.all(popular.results.map( async (movie) => {
     let tile = document.createElement('div'); 
     tile.setAttribute('class','tile no-select');
 
@@ -786,13 +844,12 @@ const startPageContainer = async (type) => {
     return tile;
   }));
 
+  if (type != 'person') { // Person category contains one list only -------------------------------
+  
+  let responseTop = await fetch(`https://kz.srrlab.ru/list/?t=${type}&l=top_rated`);
+  const top = await responseTop.json();
 
-  // -------------------------------
-
-  let responsetopMovies = await fetch(`https://kz.srrlab.ru/list/?t=${type}&l=top_rated`);
-  const topMovies = await responsetopMovies.json();
-
-  let tilesTop = await Promise.all(topMovies.results.map( async (movie) => {
+  let tilesTop = await Promise.all(top.results.map( async (movie) => {
     let tile = document.createElement('div'); 
     tile.setAttribute('class','tile no-select');
 
@@ -803,27 +860,37 @@ const startPageContainer = async (type) => {
     return tile;
   }));
 
-  popularMoviesContainer.innerHTML = '';
-  tilesPopular.map( el => { if (el) {
-    popularMoviesContainer.append(el);
-    setTimeout(() => {
-      el.style.opacity = '1';
-    }, 10)
-  }});
-
-  topMoviesContainer.innerHTML = '';
+  topContainer.innerHTML = '';
+  topContainer.addEventListener("wheel", (evt) => {
+    evt.preventDefault();
+    topContainer.scrollLeft += evt.deltaY;
+  });
   tilesTop.map( el => {if (el) {
-    topMoviesContainer.append(el);
+    topContainer.append(el);
     setTimeout(() => {
       el.style.opacity = '1';
-    }, 10)
+    }, 50)
+  }});
+  }
+
+  popularContainer.innerHTML = '';
+  popularContainer.addEventListener("wheel", (evt) => {
+    evt.preventDefault();
+    popularContainer.scrollLeft += evt.deltaY;
+  });
+  tilesPopular.map( el => { if (el) {
+    popularContainer.append(el);
+    setTimeout(() => {
+      el.style.opacity = '1';
+    }, 50)
   }});
 
 }
+
 const startPage = async () => {
   main.innerHTML = ''; main.setAttribute('class', 'start');
   let titleOverlay = load.div('start-title-overlay');
-  let titleContainer = load.div('start-title-container');
+  let titleContainer = load.div('start-title-container no-select');
 
     let header = load.text('Добро пожаловать');
     let subHeader = load.text('на русскоязычный неоффициальный сайт');
@@ -876,4 +943,4 @@ window.onpopstate = () => {
         startPage().then(() => startPageContainer(history.state.type));
       } break;
   }
-};
+}

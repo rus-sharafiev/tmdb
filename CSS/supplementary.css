@@ -112,7 +112,7 @@ input[type="date"]:invalid::-webkit-datetime-edit {
   background: rgba(var(--md-sys-color-surface--rgb), 0.8);
   border-radius: 16px;
   z-index: 100;
-  transition: opacity 0.3s cubic-bezier(0.23, 1, 0.320, 1);
+  transition: opacity 0.2s ease-in;
   
   display: flex;
   align-items: center;

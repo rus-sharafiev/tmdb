@@ -1,14 +1,235 @@
-@media only screen and (max-device-width: 736px) and (-webkit-min-device-pixel-ratio: 2) {
+@media only screen and (max-device-width: 1080px) and (-webkit-min-device-pixel-ratio: 2) {
     body {
         background: var(--md-sys-color-background);
+        min-width: 100%;
 
         display: grid;
-        grid: 50px 1fr 0px 80px / 1fr;
+        grid: 40px 1fr 80px / 1fr;
         grid-template-areas:
         "h"
         "m"
-        "f"
         "n";
         justify-content: flex-start;
+    }
+    /* Header -------------------------------------------------------- */
+    header {
+        position: fixed;
+        width: 100%;
+        height: 40px;
+        z-index: 10;
+        background: var(--md-sys-color-primary);
+        box-shadow: 0px 1px 2px rgb(0 0 0 / 15%), 
+                        0px 2px 6px 2px rgb(0 0 0 / 15%);
+        display: grid;
+        grid: 40px / 15px 1fr 40px 15px;
+    }
+    header > .logo,
+    header > .logo-overlay {
+        width: 150px;
+        justify-self: start;
+    }
+    header > form {
+        grid-column: auto;
+        grid-row: auto;
+        top: -50px;
+        right: 10px;
+        position: absolute;
+    }
+    header > form > input#query.text-inside, 
+    header > form > input#query:focus-within,
+    header > form > input#query,
+    main.start + header > form > input#query {
+        width: calc(100vw - 20px);
+    }
+
+    /* Nav ----------------------------------------------------------- */
+    nav {
+        height: 80px;
+        width: 100%;
+        top: auto;
+        bottom: 0;
+        margin: 0;
+        padding: 12px 0 16px;
+        z-index: 100;
+
+        display: flex;
+        flex-direction: row-reverse;
+        gap: 8px;
+        
+        -webkit-backdrop-filter: saturate(150%) blur(10px);
+        backdrop-filter: saturate(150%) blur(10px);
+        background: linear-gradient(300deg, 
+                    rgba(var(--md-sys-color-primary--rgb), 0.08), 
+                    rgba(var(--md-sys-color-primary--rgb), 0.08)), 
+                    rgba(var(--md-sys-color-surface--rgb), 0.8);
+        box-shadow: 0px 1px 2px rgba(0 0 0 / 15%), 
+                    0px 2px 6px 2px rgba(0 0 0 / 15%);
+    }
+    nav > div {
+        height: 52px;
+        width: 100%;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--md-sys-color-on-surface-variant);
+        gap: 4px;
+        cursor: pointer;
+    }
+    nav > div:hover {
+        background: none;
+    }
+    nav > div > span {
+        width: 32px;
+        transition: all 0.1s linear;
+    }
+    nav > div.nav-active > span {
+        width: 64px;
+        height: 32px;
+        border-radius: 16px;
+        background: linear-gradient(to right,
+        rgba(var(--md-sys-color-tertiary--rgb), 0.8), 
+        rgba(var(--md-sys-color-secondary--rgb), 0.8)),
+        var(--md-sys-color-surface);
+    }
+    .nav-menu {
+        margin: 0;
+        color: var(--md-sys-color-on-secondary-container);
+    }
+    .nav-menu:hover > div {
+        background: none;
+    }
+    .nav-menu > div::after {
+        content: 'Подбор';
+    }
+    nav.menu-open {
+        width: 100vw;
+    }
+    #nav-menu-list {
+        position: fixed;
+        height: calc(100vh - 200px);
+        max-width: calc(100vw - 20px);
+        min-width: min-content;
+        bottom: 90px;
+        right: 10px;
+        padding: 20px;
+        background: linear-gradient(0, 
+                    rgba(var(--md-sys-color-primary--rgb), 0.05), 
+                    rgba(var(--md-sys-color-primary--rgb), 0.05)), 
+                    var(--md-sys-color-background);
+        box-shadow: 0px 1px 2px rgb(0 0 0 / 15%), 
+                    0px 1px 3px 1px rgb(0 0 0 / 15%);
+        border: none;
+        border-radius: 10px;
+        gap: 10px;
+    }
+    .filters,
+    #filters-submit-btn {
+        margin: 0 -5px;
+    }
+
+    /* Main ---------------------------------------------------------- */
+    main {
+        height: auto;
+        width: 100vw;
+        min-height: calc(100vh - 130px);
+        border-radius: 0;
+        padding: 0;
+        margin: 0;
+    }
+    .search {
+        padding: 0;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        grid-template-rows: repeat(auto-fill, 328px);
+        gap: 0;
+        justify-content: space-evenly;
+    }
+
+    /* Start page ---------------------------------------------------- */
+    main.start {
+        display: grid;
+        grid: 170px 740px / 1fr;
+    }
+    .start-title-overlay {
+        border-radius: 0;
+        height: calc(100% + 50px);
+        margin: -50px 0 0 0;
+        background: linear-gradient(to right, 
+            rgba(var(--md-sys-color-primary--rgb), 0.9), 
+            rgba(var(--md-sys-color-primary--rgb), 0.9)), 
+            url(/IMG/start_background.png);
+        background-position: right;
+        background-size: contain;
+    }
+    .start-title-container {
+        width: calc(100% - 20px);
+        left: 10px;
+        display: grid;
+        grid: 35px 30px 30px 25px 1fr / 1fr;
+    }
+    .start-title-container > div:nth-child(1) {
+        font-size: 37px;
+        justify-self: center;
+    }
+    .start-title-container > div:nth-child(2) {
+        font-size: 14px;
+        margin: -20px 0px 0 0;
+        justify-self: end;
+    }
+    .start-title-container > img {
+        width: 100%;
+    }
+    .start-title-container > div:nth-child(4) {
+        font-size: 15px;
+    }
+    main.start + header {
+        position: absolute;
+        top: -60px;
+        display: flex;
+    }
+    main.start + header > form {    
+        margin: 0;
+        left: 10px;
+        top: 220px;
+        position: absolute;
+    }
+    main.start + header > form > input#query {
+        width: calc(100vw - 20px);
+    }
+    #start-container {
+        display: grid;
+        grid: 30px 340px 30px 340px / 1fr;
+    }
+    .start-top-title, .start-popular-title {
+        width: 100%;
+    }
+    .start-popular, .start-top {
+        height: 340px;
+        padding: 5px;
+        display: grid;
+        grid-template-columns: repeat(20, 180px);
+    }
+    
+    /* Tile  --------------------------------------------------------- */
+    .tile,
+    main.start > div > div > .tile {
+        display: grid;
+        grid: 220px 27px 30px 32px / 60px 107px;
+    }
+    .poster,
+    main.start > div > div > .tile > .poster {
+        width: 100%;
+    }
+    .title {
+        font-size: 13px;
+    }
+    .original-title {
+        font-size: 9px;
+    }
+    .release-date {
+        font-size: 10px;
+    }
+    .tile-overlay,
+    .tile-overlay:hover {
+        border: none;
     }
 }

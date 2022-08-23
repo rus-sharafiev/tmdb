@@ -34,6 +34,8 @@ export const image = async (path, cls) => {
       }
     } else if (cls == 'poster' || cls == 'movie-actor-img' || cls == 'tv-season-poster') {
       var url = '/IMG/no_poster.svg';
+    } else if (cls == 'tv-episode-still') {
+      var url = '/IMG/no_still.svg';
     } else return;
     
     return new Promise( (res) => {
@@ -405,6 +407,7 @@ export const movieCollection = async (collection) => {
 }
 
 // Person birthday and age ----------------------------------------------------------
+// Clear search field ---------------------------------------------------------------
 export const personBirthday = async (birthday, cls) => {
   let cont = div(cls);
   let today = new Date();
@@ -419,6 +422,21 @@ export const personBirthday = async (birthday, cls) => {
   
   cont.append(formatedBirthday);
   return cont;
+}
+
+// Clear search field ---------------------------------------------------------------
+export const clearSearch = () => {
+  let searchFormInput = document.getElementById('query');
+  let searchFormYear = document.getElementById('year');
+  let searchFormYearLabel = document.getElementById('year-label');
+  let searchFormClrBtn = document.getElementById('clear-btn');
+
+  searchFormInput.value = '';
+  searchFormInput.classList.remove('text-inside');
+  searchFormYear.value = '';
+  searchFormYearLabel.style.display = 'none';
+  searchFormYear.style.display = 'none';
+  searchFormClrBtn.style.display = 'none';
 }
 
 // Discover filters -----------------------------------------------------------------
