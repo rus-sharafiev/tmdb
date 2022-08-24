@@ -80,7 +80,7 @@ input[type="date"]:invalid::-webkit-datetime-edit {
 ::-webkit-scrollbar {
   cursor: pointer;
   width: 2px;
-  height: 6px;
+  height: 4px;
 }
 ::-webkit-scrollbar-track {
   background: none;
@@ -178,7 +178,7 @@ input[type="date"]:invalid::-webkit-datetime-edit {
 /* Add fetch loader ------------------------------------------- */
 .lds-default {
   grid-column: 1 / -1;
-  grid-row: 3 / 4;
+  grid-row: 2 / 3;
   display: inline-block;
   position: relative;
   width: 80px;

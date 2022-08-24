@@ -21,7 +21,7 @@
         box-shadow: 0px 1px 2px rgb(0 0 0 / 15%), 
                         0px 2px 6px 2px rgb(0 0 0 / 15%);
         display: grid;
-        grid: 40px / 15px 1fr 40px 15px;
+        grid: 40px / 15px 1fr 70px 15px;
     }
     header > .logo,
     header > .logo-overlay {
@@ -34,12 +34,35 @@
         top: -50px;
         right: 10px;
         position: absolute;
+        transition: all 0.2s linear;
     }
     header > form > input#query.text-inside, 
     header > form > input#query:focus-within,
     header > form > input#query,
     main.start + header > form > input#query {
         width: calc(100vw - 20px);
+    }
+
+    .mobile-search {
+        grid-column: 3 / 4;
+        grid-row: 1 / -1;
+        width: 100%;
+        height: 100%;
+        color: var(--md-sys-color-on-primary);
+        font-size: 30px;
+        font-weight: 200;
+        
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+    }
+    .mobile-search::before {
+        content: 'Поиск';
+        font-family: 'Roboto Flex', sans-serif;
+        font-size: 15px;
+        font-weight: 400;
+        color: rgba(var(--md-sys-color-secondary--rgb), 0.4);
     }
 
     /* Nav ----------------------------------------------------------- */
@@ -125,6 +148,10 @@
     #filters-submit-btn {
         margin: 0 -5px;
     }
+    nav.menu-open > div.nav-active:after,
+    nav.menu-open > div.nav-active:before {
+        display: none;
+    }
 
     /* Main ---------------------------------------------------------- */
     main {
@@ -135,28 +162,33 @@
         padding: 0;
         margin: 0;
     }
-    .search {
+    .search,
+    .discover {
         padding: 0;
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-        grid-template-rows: repeat(auto-fill, 328px);
+        grid-template-rows: repeat(auto-fit, 328px);
         gap: 0;
         justify-content: space-evenly;
+    }
+    #load-more {
+        display: grid;
+        grid: 83px 85px 150px / 170px;
     }
 
     /* Start page ---------------------------------------------------- */
     main.start {
         display: grid;
-        grid: 170px 740px / 1fr;
+        grid: 170px 760px / 1fr;
     }
     .start-title-overlay {
         border-radius: 0;
         height: calc(100% + 50px);
         margin: -50px 0 0 0;
-        background: linear-gradient(to right, 
-            rgba(var(--md-sys-color-primary--rgb), 0.9), 
-            rgba(var(--md-sys-color-primary--rgb), 0.9)), 
-            url(/IMG/start_background.png);
+        background: linear-gradient(to bottom, 
+        var(--md-sys-color-primary), 
+        rgba(var(--md-sys-color-primary--rgb), 0.95)), 
+        url(/IMG/start_background.png);
         background-position: right;
         background-size: contain;
     }
@@ -191,22 +223,33 @@
         left: 10px;
         top: 220px;
         position: absolute;
+        transition: unset;
     }
     main.start + header > form > input#query {
         width: calc(100vw - 20px);
     }
     #start-container {
         display: grid;
-        grid: 30px 340px 30px 340px / 1fr;
+        grid: 40px 340px 40px 340px / 1fr;
     }
     .start-top-title, .start-popular-title {
         width: 100%;
+        padding: 10px 0 0 10px;
     }
     .start-popular, .start-top {
         height: 340px;
         padding: 5px;
         display: grid;
         grid-template-columns: repeat(20, 180px);
+    }
+    .start-top-title::after,
+    .start-popular-title::after,
+    .start-top-title:hover::after,
+    .start-popular-title:hover::after {
+        content: 'показать все -->';
+        padding-left: 8px;
+        font-size: 12px;
+        color: rgba(var(--md-sys-color-primary--rgb), 0.3);
     }
     
     /* Tile  --------------------------------------------------------- */
@@ -231,5 +274,79 @@
     .tile-overlay,
     .tile-overlay:hover {
         border: none;
+    }
+
+    /* Movie page ----------------------------------------------------------------------------------- */
+    .movie {
+        display: grid;
+        grid: 5px 310px auto 22px 22px auto 26px 24px 26px 37px 39px 94px 278px 321px 390px / 
+        5px 1fr 5px;
+        grid-template-areas:
+            '. ...... .'
+            '. poster .'
+            '. title .'
+            '. tagline .'
+            '. genres .'
+            '. overview .'
+            '. revenue .'
+            '. budget .'
+            '. status .'
+            '. release .'
+            '. votes .'
+            '. crew .'
+            '. actors .'
+            '. videos .'
+            '. ...... .';
+        align-items: start;
+        justify-content: start;
+        color: var(--md-sys-color-on-surface);
+    }
+    .movie-poster,
+    .tv-poster {
+        width: 200px;
+    }
+    .backdrop {
+        grid-column: 1 / -1;
+        grid-row: 1 / -1;
+        width: 100%;
+        height: 200px;
+    }
+    .movie-backdrop-overlay, .tv-backdrop-overlay {
+        grid-column: 1 / -1;
+        grid-row: 1 / 5;
+        width: 100%;
+        height: 200px;
+    }
+    .movie-votes-title, .tv-votes-title {
+        grid-column: 2 / 3;
+        grid-row: 13 / 14;
+    }
+    .movie-votes, .tv-votes {
+        grid-column: 2 / 3;
+        grid-row: 2 / 3;
+        margin: 140px 0 0 220px;
+    }
+    .movie-vote-count, 
+    .tv-vote-count {
+        grid-column: 2 / 3;
+        grid-row: 2 / 3;
+    }
+    .movie-collection {
+        grid-column: 2 / 3;
+        grid-row: 1 / 4;
+        display: grid;
+        grid: 0 90px 30px 0 / 0 0 80px 0;
+    }
+    .movie-collection-poster {
+        width: 80px;
+    }
+    .movie-title, 
+    .tv-title {
+        font-size: 30px;
+        text-shadow: none;
+    }
+    .movie-original-title, 
+    .tv-original-title {
+        font-size: 15px;
     }
 }

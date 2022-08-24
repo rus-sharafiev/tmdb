@@ -5,14 +5,15 @@
 @import 'supplementary.css';
 @import 'start_page.css';
 @import 'movie_tv_page.css';
-@import 'movie_collection.css';
-@import 'tv_episodes.css';
+@import 'tv_seasons_episodes.css';
 @import 'person_page.css';
 
 * {
     box-sizing: border-box;
     -webkit-tap-highlight-color: transparent;
 }
+
+.mobile-search { display: none; }
 
 .test-div {
     position: fixed;
@@ -146,6 +147,11 @@ header > form > input#year {
     display: flex;
     align-items: center;
     gap: 5px;
+}
+header > form > input#year::-webkit-outer-spin-button,
+header > form > input#year::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 header > form > input#year::placeholder {
     color: var(--md-sys-color-outline);
@@ -515,7 +521,8 @@ main {
     justify-content: center;
     align-items: center;
 }
-.search {
+.search,
+.discover {
     padding: 8px;
 
     display: grid;
@@ -651,21 +658,9 @@ main {
     color: rgba(var(--md-sys-color-primary--rgb), 0.1);
 
     display: grid;
-    grid: 50px 50px 85px 200px / 200px;
+    grid: 100px 85px 198px / 200px;
     justify-items: center;
     align-items: center;
-}
-.icon-load-more {
-    grid-column: 1 / -1;
-    grid-row: 3 / 4;
-    font-size: 100px;
-    font-weight: 100;
-}
-.text-load-more {
-    grid-column: 1 / -1;
-    grid-row: 2 / 3;
-    font-size: 30px;
-    font-weight: 200;
 }
 
 /* Tile Loading -------------------------------------------------- */

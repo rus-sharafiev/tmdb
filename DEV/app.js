@@ -117,6 +117,7 @@ const createHeader = async () => {
         }, 1);
       }
       searchFormInput.onblur = () => {
+        searchForm.style = null;
         setTimeout(() => {
           if (document.activeElement.id != 'query') {
             if (document.activeElement.id == 'year') return;
@@ -141,6 +142,7 @@ const createHeader = async () => {
       searchFormYearLabel.style.display = 'none';
       
       searchFormYear.onblur = () => {
+        searchForm.style = null;
         setTimeout(() => {
           if (document.activeElement.id != 'query') {
             if (document.activeElement.id == 'year') return;
@@ -191,8 +193,17 @@ const createHeader = async () => {
       searchMedia(searchData.get('query'), searchData.get('year'), active[0].id).catch( (error) => main.innerHTML = `${error}`);
       history.pushState( { type: active[0].id, search: searchData.get('query'), year: searchData.get('year') }, '', '/' + active[0].id + '?search=' + searchData.get('query')); 
     }
+    
+  const mobileSearch = document.createElement('div');
+    mobileSearch.classList.add('mobile-search', 'material-symbols-rounded');
+    mobileSearch.innerHTML = 'search';
+    mobileSearch.onclick = () => {
+      searchFormInput.focus();
+      searchForm.style.top = '50px';
 
-  return Promise.all([logo, logoOverlay, searchOverlay, searchForm]);
+    }
+
+  return Promise.all([logo, logoOverlay, searchOverlay, searchForm, mobileSearch]);
 }
 
 // Nav ------------------------------------------------------------------------------------------
@@ -309,6 +320,8 @@ const tileContent = async (media, type) => {
 
 // Search ---------------------------------------------------------------------------------------
 const searchMedia = async (query, year, type, page) => {
+  main.addEventListener('scroll', null);
+  main.addEventListener('touchmove', null);
   
   if (main.classList.contains('start')) {
     main.classList.remove('start');
@@ -354,12 +367,8 @@ const searchMedia = async (query, year, type, page) => {
 
   if (data.total_pages > 1) {
     if (!page || page < data.total_pages) {
-      let loadMore = document.createElement('div'); loadMore.setAttribute('id', 'load-more');
-      let iconLoadMore = load.text('arrow_circle_right', 'icon-load-more material-symbols-rounded');
       if (!page) page = 1;
-      let pages = data.total_pages - page;
-      let textLoadMore = load.text(`Еще ${pages}`, 'text-load-more');
-      (await Promise.all([iconLoadMore, textLoadMore])).map((el) => { if (el) loadMore.append(el)});
+      let loadMore = document.createElement('div'); loadMore.id = 'load-more';
       main.append(loadMore);
 
       let loadNextPage = () => {
@@ -368,22 +377,25 @@ const searchMedia = async (query, year, type, page) => {
         searchMedia(query, year, type, nextpage); 
       }     
 
-      let onScroll = () => {
-        if (main.classList.contains('search') && ((main.offsetHeight + main.scrollTop + 400) >= main.scrollHeight)) {
+      var onScroll = () => {
+        if (main.classList.contains('search') && (main.offsetHeight + main.scrollTop + 400 >= main.scrollHeight)) {
           loadNextPage();
           main.removeEventListener('scroll', onScroll);
         }
       }
       main.addEventListener('scroll', onScroll);
 
-      let onTouchmove = () => { 
-        if (window.pageYOffset > main.offsetHeight - 3280) {
+      var onTouchmove = () => {
+        if (main.classList.contains('search') && window.pageYOffset > main.offsetHeight - 3280) {
           loadNextPage();
           main.removeEventListener('touchmove', onTouchmove);
         } 
       }
       main.addEventListener('touchmove', onTouchmove);
     }
+  } else {
+    main.removeEventListener('scroll', onScroll);
+    main.removeEventListener('touchmove', onTouchmove);
   }
 }
 
@@ -438,6 +450,8 @@ const personMenuList = async () => {
 
 // Discover
 export const discover = async (a, type, list, page) => {
+  main.addEventListener('scroll', null);
+  main.addEventListener('touchmove', null);
 
   if (main.classList.contains('start')) {
     main.classList.remove('start');
@@ -475,7 +489,7 @@ export const discover = async (a, type, list, page) => {
   const data = await response.json();    // console.log(data);
 
   if (!page) { main.innerHTML = ''; main.style = null; } else if (document.getElementById('load-more')) { main.removeChild(document.getElementById('load-more')); }
-  main.setAttribute('class', 'search');
+  main.setAttribute('class', 'discover');
   load.tileLoadingAnimation(data.results.length); //return;
 
   if (data.page == 'error') { main.innerHTML = `Ошибка PHP cURL запроса: ${data.error}`; return; }
@@ -503,36 +517,37 @@ export const discover = async (a, type, list, page) => {
 
   if (data.total_pages > 1) {
     if (!page || page < data.total_pages) {
-      let loadMore = document.createElement('div'); loadMore.setAttribute('id', 'load-more');
-      let iconLoadMore = load.text('arrow_circle_right', 'icon-load-more material-symbols-rounded');
       if (!page) page = 1;
-      let pages = data.total_pages - page;
-      let textLoadMore = load.text(`Еще ${pages}`, 'text-load-more');
-      (await Promise.all([iconLoadMore, textLoadMore])).map((el) => { if (el) loadMore.append(el)});
+      let loadMore = document.createElement('div'); loadMore.id = 'load-more';
       main.append(loadMore);
 
       let loadNextPage = () => {
         loadMore.innerHTML = '<div class="lds-default"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>';
         let nextpage = page + 1;
+        console.log(nextpage);
         discover(a, type, list, nextpage);
       }     
 
-      let onScroll = () => {
-        if (main.classList.contains('search') && ((main.offsetHeight + main.scrollTop + 400) >= main.scrollHeight)) {
+      var onScroll = () => {
+        if (main.classList.contains('discover') && (main.offsetHeight + main.scrollTop + 400 >= main.scrollHeight)) {
           loadNextPage();
+
           main.removeEventListener('scroll', onScroll);
         }
       }
       main.addEventListener('scroll', onScroll);
 
-      let onTouchmove = () => { 
-        if (window.pageYOffset > main.offsetHeight - 3280) {
+      var onTouchmove = () => { 
+        if (main.classList.contains('discover') && window.pageYOffset > main.offsetHeight - 3280) {
           loadNextPage();
           main.removeEventListener('touchmove', onTouchmove);
         } 
       }
       main.addEventListener('touchmove', onTouchmove);
     }
+  } else {
+    main.removeEventListener('scroll', onScroll);
+    main.removeEventListener('touchmove', onTouchmove);
   }
 }
 
@@ -575,10 +590,6 @@ export const showMovie = async (id) => {
   let voteAverage = load.votesCircle(movie.vote_average, 44, 50, 'movie-votes', movie.vote_count);
   let voteCount = load.text(movie.vote_count, 'movie-vote-count');
 
-  if (movie.belongs_to_collection) {
-    var collection = load.movieCollection(movie.belongs_to_collection);
-  }
-
   let videos = load.mediaVideos(movie.videos);
   
   let directors = [];
@@ -596,12 +607,13 @@ export const showMovie = async (id) => {
 
   let actors = document.createElement('div'); actors.setAttribute('class', 'movie-actors');
   for (let i = 0; i < movie.credits.cast.length; i++) {
-    load.actor(movie.credits.cast[i].profile_path, movie.credits.cast[i].name, movie.credits.cast[i].character, movie.credits.cast[i].id).then( tile => { if (tile) actors.append(tile)});
-    if (i == 10) break;
+    if (movie.credits.cast[i].profile_path) {
+    load.actor(movie.credits.cast[i].profile_path, movie.credits.cast[i].name, movie.credits.cast[i].character, movie.credits.cast[i].id).then( tile => { if (tile) actors.append(tile)});}
+    if (i == 20) break;
   }
   
   let content = await Promise.all([style, poster, backdrop, backdropOverlay, titles, genres, tagline, overview, status, budget, revenue,
-                      releaseDate, voteTile, voteAverage, voteCount, crew, actors, videos, collection]);
+                      releaseDate, voteTile, voteAverage, voteCount, crew, actors, videos]);
 
   main.innerHTML = '';
   main.style = null;
@@ -609,9 +621,67 @@ export const showMovie = async (id) => {
   main.setAttribute('class','movie');
   content.map((el) => { if (el) main.append(el) });
 
-  let suggested = document.createElement('div'); suggested.setAttribute('class', 'movie-suggested'); main.append(suggested);
+  if (movie.belongs_to_collection) {
+    var collectionTile = document.createElement('div'); collectionTile.classList.add('movie-collection'); 
+
+    let backdrop = load.image(movie.belongs_to_collection.backdrop_path, 'movie-collection-backdrop');
+    let title = load.text(movie.belongs_to_collection.name, 'movie-collection-name');
+    (await Promise.all([backdrop, title])).map((el) => { if (el) collectionTile.append(el) } );
+    main.append(collectionTile); setTimeout(() => { collectionTile.style.opacity = '1';}, 10);
+  }
+ 
+  if (movie.recommendations.results.length != 0) {
+    var suggested = document.createElement('div'); suggested.setAttribute('class', 'movie-suggested'); 
+    main.append(suggested); setTimeout(() => { suggested.style.opacity = '1';}, 10);
+  }
+    
+  if (movie.belongs_to_collection) {
+    const response = await fetch(`https://kz.srrlab.ru/collection/?id=${movie.belongs_to_collection.id}`);
+    const collections = await response.json(); console.log(collections);
+
+    let sortByDate = (content) => {
+      content.sort( (a, b) => {             
+        let fist = a.release_date; if (fist == '') fist = '2100-01-01';
+        let second = b.release_date; if (second == '') second = '2100-01-01';
+        if (fist < second) { return -1; }
+        if (fist > second) { return 1; }
+        return 0;
+      });
+    }
+    sortByDate(collections.parts);
+  
+    let parts = document.createElement('div'); parts.id = 'parts-container'; parts.classList.add('no-select');
+    parts.addEventListener("wheel", (evt) => {
+      evt.preventDefault();
+      parts.scrollLeft += evt.deltaY;
+    });
+    parts.style.gridTemplateColumns = 'repeat(' + collections.parts.length + ', 170px)';
+    collectionTile.append(parts);
+  
+    let partTiles = await Promise.all(collections.parts.map( async (part) => {
+      let partTile = document.createElement('div'); partTile.classList.add('tile', 'no-select'); 
+        let poster = load.image(part.poster_path, 'poster');
+        let titles = document.createElement('div'); titles.classList.add('titles');
+          let title = load.text(part.title, 'title'); 
+          let originalTitle = load.text(part.original_title, 'original-title');
+          (await Promise.all([title, originalTitle])).map((el) => { if (el) titles.append(el)});
+        let releaseDate = load.date(part.release_date, 'release-date');
+        let voteAverage = load.votesCircle(part.vote_average, 25, 30, 'votes', part.vote_count);
+        let tileOverlay = document.createElement('div'); tileOverlay.classList.add('tile-overlay');
+        tileOverlay.onclick = () => {
+          showMovie(part.id).catch( (error) => main.innerHTML = `${error}`);
+          history.pushState( { type: 'movie', id: part.id}, '', '/movie#' + part.id );
+        }
+        (await Promise.all([poster, titles, releaseDate, voteAverage, tileOverlay])).map((el) => { if (el) partTile.append(el) } );
+  
+      return partTile;
+    }));
+  
+    partTiles.map((tile) => { if (tile) { parts.append(tile); setTimeout(() => { tile.style.opacity = '1';}, 10) }});
+  }
 
   let tiles = await Promise.all(movie.recommendations.results.map( async (movie) => {
+    if (!movie.poster_path) return;
     let tile = document.createElement('div'); tile.setAttribute('class','tile no-select');
       let poster = load.image(movie.poster_path, 'poster');
       let titles = document.createElement('div'); titles.setAttribute('class', 'titles');
@@ -619,8 +689,7 @@ export const showMovie = async (id) => {
         let originalTitle = load.text(movie.original_title, 'original-title');
         (await Promise.all([title, originalTitle])).map((el) => { if (el) titles.append(el)});
       let voteAverage = load.votesCircle(movie.vote_average, 25, 30, 'votes', movie.vote_count);
-      let tileOverlay = document.createElement('div'); 
-        tileOverlay.setAttribute('class','tile-overlay');
+      let tileOverlay = document.createElement('div'); tileOverlay.setAttribute('class','tile-overlay');
         tileOverlay.onclick = () => {
           showMovie(movie.id).catch( (error) => main.innerHTML = `${error}`);
           history.pushState( { type: 'movie', id: movie.id}, '', '/movie#' + movie.id );
@@ -641,7 +710,7 @@ export const showTv = async (id) => {
   load.fetchAnimation(); main.style.overflow = 'hidden';
 
   const response = await fetch(`https://kz.srrlab.ru/tv/?id=${id}`);
-  const tv = await response.json();    //console.log(tv);
+  const tv = await response.json();
   if (tv.id == 'error') { main.innerHTML = `Ошибка PHP cURL запроса: ${tv.error}`; return; }
 
   let style = load.vibrantStyles(tv.poster_path);
@@ -702,25 +771,30 @@ export const showTv = async (id) => {
   main.style = null;
   main.scrollTop = 0;
   main.setAttribute('class','tv');
-  content.map((el) => { if (el) main.append(el) });  
+  content.map((el) => { if (el) main.append(el) });
+  
+  if (tv.recommendations.results.length != 0) {
+    let suggested = document.createElement('div'); suggested.setAttribute('class', 'tv-suggested');
+    main.append(suggested); setTimeout(() => { suggested.style.opacity = '1';}, 10);
 
-  let suggested = document.createElement('div'); suggested.setAttribute('class', 'tv-suggested');main.append(suggested);
-  let tiles = await Promise.all(tv.recommendations.results.map( async (tv) => {
-    let tile = document.createElement('div'); tile.setAttribute('class','tile no-select');
-      let poster = load.image(tv.poster_path, 'poster');
-      let title = load.text(tv.name, 'title'); 
-      let voteAverage = load.votesCircle(tv.vote_average, 25, 30, 'votes', tv.vote_count);
-      let tileOverlay = document.createElement('div'); 
-        tileOverlay.setAttribute('class', 'tile-overlay');
-        tileOverlay.onclick = () => {
-          showTv(tv.id).catch( (error) => main.innerHTML = `${error}`); 
-          history.pushState( { type: 'tv', id: tv.id}, '', '/tv#' + tv.id );
-        }
-    (await Promise.all([poster, title, voteAverage, tileOverlay])).map((el) => { if (el) tile.append(el) } );
-    return tile;
-  }));
+    let tiles = await Promise.all(tv.recommendations.results.map( async (tv) => {
+      if (!tv.poster_path) return;
+      let tile = document.createElement('div'); tile.setAttribute('class','tile no-select');
+        let poster = load.image(tv.poster_path, 'poster');
+        let title = load.text(tv.name, 'title'); 
+        let voteAverage = load.votesCircle(tv.vote_average, 25, 30, 'votes', tv.vote_count);
+        let tileOverlay = document.createElement('div'); 
+          tileOverlay.setAttribute('class', 'tile-overlay');
+          tileOverlay.onclick = () => {
+            showTv(tv.id).catch( (error) => main.innerHTML = `${error}`); 
+            history.pushState( { type: 'tv', id: tv.id}, '', '/tv#' + tv.id );
+          }
+      (await Promise.all([poster, title, voteAverage, tileOverlay])).map((el) => { if (el) tile.append(el) } );
+      return tile;
+    }));
 
-  tiles.map((tile) => { if (tile) { suggested.append(tile); setTimeout(() => { tile.style.opacity = '1';}, 10) }});
+    tiles.map((tile) => { if (tile) { suggested.append(tile); setTimeout(() => { tile.style.opacity = '1';}, 10) }});
+  }
 }
 
 // Person ---------------------------------------------------------------------------------------
