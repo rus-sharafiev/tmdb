@@ -1,5 +1,5 @@
 import '/DEV/vibrant.min.js';
-import { showMovie, showTv, showPerson, discover } from '/DEV/app.js';
+import { showPerson, discover } from '/DEV/app.js';
 
 // Div ------------------------------------------------------------------------------
 export const div = (cls, id, container) => {
@@ -48,12 +48,6 @@ export const image = async (path, cls) => {
     })
 }
 
-//  let mobileCheck = () => {
-//   let check = false;
-//   (function(a){if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0,4))) check = true;})(navigator.userAgent||navigator.vendor||window.opera);
-//   return check;
-// };
-
 // Vibrant styles generated inside <styles> -----------------------------------------
 export const vibrantStyles = async (path) => {
   let style = document.createElement('style');
@@ -64,15 +58,15 @@ export const vibrantStyles = async (path) => {
     let rgbD = palette.DarkVibrant.getRgb();
     let rgbL = palette.LightVibrant.getRgb();
 
-    // if (mobileCheck) { 
-    //   var a = 0;
-    //   var b = 0.8;
-    //   var c = 0.8;
-    // } else { 
+    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) { 
+      var a = 0;
+      var b = 0.8;
+      var c = 0.8;
+    } else { 
       var a = '500px';
       var b = 1;
       var c = 0.8;
-    // }
+    }
 
     style.innerHTML = `
     .movie-backdrop-overlay, .tv-backdrop-overlay {
@@ -160,9 +154,15 @@ export const mediaStatus = (status) => {
 // Videos related to media ----------------------------------------------------------
 export const mediaVideos = async (data) => {
   let videosContainer = document.createElement('div'); videosContainer.setAttribute('class', 'videos-container');
+  let videosSubContainer = document.createElement('div'); videosSubContainer.setAttribute('class', 'videos');   
+  videosSubContainer.addEventListener("wheel", (evt) => {
+    evt.preventDefault();
+    videosSubContainer.scrollLeft += evt.deltaY;
+  });
+
   if (data.results.length == 0) {
     let noVideo = await text('Нет видео', 'movie-no-videos');
-    videosContainer.append(noVideo);
+    videosSubContainer.append(noVideo);
   } else {
     let videos = data.results;
     videos.map( async (video) => {
@@ -171,9 +171,10 @@ export const mediaVideos = async (data) => {
         let videoFrame = document.createElement('iframe'); videoFrame.setAttribute('class', 'video-frame');
         videoFrame.src = `https://www.youtube.com/embed/${video.key}`;
         videoContainer.append(videoFrame, videoName);
-        videosContainer.append(videoContainer);
+        videosSubContainer.append(videoContainer);
     });
   }
+  videosContainer.append(videosSubContainer);
   return videosContainer;
 }
 
@@ -286,7 +287,8 @@ export const tileLoadingAnimation = async (qtt) => {
 // Animation while fetching JSON ----------------------------------------------------
 export const fetchAnimation = async () => {
   let ani = div('', 'fetch-animation');
-  ani.innerHTML = '<div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>';
+  let cpi = new Image(48, 48); cpi.src = 'IMG/cpi.svg';
+  ani.append(cpi);
   ani.style.top = `${document.querySelector('main').scrollTop}px`;
   document.body.querySelector('main').append(ani);
   setTimeout(() => {
@@ -295,10 +297,16 @@ export const fetchAnimation = async () => {
 }
 
 // TV season tile and overlay with episodes -----------------------------------------
-export const seasonTile = async (tv_id, season) => {
+export const seasonTile = async (tv_id, season, main_poster) => {
   let tileContainer = div('tv-season-contaner');
   let tile = div('tv-season');
-  let poster = image(season.poster_path, 'tv-season-poster');
+
+  let poster;
+  if (season.poster_path) {
+    poster = image(season.poster_path, 'tv-season-poster');
+  } else {
+    poster = image(main_poster, 'tv-season-no-poster');
+  }
 
   let seasonNumber = text(`${season.season_number}`, 'tv-season-number');
   let title = text(season.name, 'tv-season-name'); 
@@ -312,9 +320,8 @@ export const seasonTile = async (tv_id, season) => {
     tile.classList.add('episodes');
     tile.style.top = `${document.querySelector('main').scrollTop + 25}px`;
     document.querySelector('main').style.overflow = 'hidden';
-    if (!season.overview) season.overview = 'Нет обзора';
-    let overview = await text(season.overview, 'tv-season-overview');
-    let closeBtn = await text('cancel', 'tv-season-close-btn material-symbols-rounded');
+    let overview; if (season.overview) overview = await text(season.overview, 'tv-season-overview');
+    let closeBtn = await text('close', 'tv-season-close-btn material-symbols-rounded');
     closeBtn.onclick = () => {
       tile.removeChild(episodes);
       tile.classList.remove('episodes');
@@ -323,7 +330,7 @@ export const seasonTile = async (tv_id, season) => {
     }
 
     const response = await fetch(`https://kz.srrlab.ru/tv/season/?id=${tv_id}&n=${season.season_number}`);
-    const seasonEpisodes = await response.json(); console.log(seasonEpisodes);
+    const seasonEpisodes = await response.json();
 
     let episodes = div('no-select', 'tv-episodes-container');
     if (overview) episodes.append(overview);
@@ -364,20 +371,50 @@ export const sortByDate = (content) => {
 }
 
 // Person birthday and age ----------------------------------------------------------
-// Clear search field ---------------------------------------------------------------
-export const personBirthday = async (birthday, cls) => {
-  let cont = div(cls);
-  let today = new Date();
+function ageText(age) {
+    var txt;
+    var count = age % 100;
+    if (count >= 5 && count <= 20) {
+        txt = 'лет';
+    } else {
+        count = count % 10;
+        if (count == 1) {
+            txt = 'год';
+        } else if (count >= 2 && count <= 4) {
+            txt = 'года';
+        } else {
+            txt = 'лет';
+        }
+    }
+    return txt;
+}
+
+export const personDates = async (birthday, deathday) => {
+  let cont = div('person-dates');
+
+  let birthDateContainer = div('person-birthday');
   let birthDate = new Date(birthday);
-  let age = today.getFullYear() - birthDate.getFullYear();
-  let m = today.getMonth() - birthDate.getMonth();
-  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-      age--;
+  let birthDateLocal = birthDate.toLocaleString('ru',{ year: 'numeric', month: 'long', day: 'numeric' });
+  birthDateContainer.append(birthDateLocal);
+  cont.append(birthDateContainer);
+
+  if (deathday) {
+    let deathDateContainer = div('person-deathday');
+    let deathDate = new Date(deathday);
+    let deathDateLocal = deathDate.toLocaleString('ru',{ year: 'numeric', month: 'long', day: 'numeric' });
+    deathDateContainer.append(deathDateLocal);
+    cont.append(deathDateContainer);
+  } else {
+    let ageContainer = div('person-age');
+    let today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    let m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+    }
+    ageContainer.append(`${age} ${ageText(age)}`);
+    cont.append(ageContainer);
   }
-  let localDate = birthDate.toLocaleString('ru',{ year: 'numeric', month: 'long', day: 'numeric' });
-  let formatedBirthday = `${localDate} (${age})`
-  
-  cont.append(formatedBirthday);
   return cont;
 }
 
@@ -485,7 +522,7 @@ export const filters = async (type) => {
     minYear.id = 'min-year';
     minYear.name = 'min_year';
     minYear.required = true;
-    minYear.onchange = () => {btn.classList.add('ready'); console.log(minYear.value)}
+    minYear.onchange = () => {btn.classList.add('ready');}
   let minYearLabel = document.createElement('label');
     minYearLabel.for = 'min-year';
     minYearLabel.innerHTML = ' с';
@@ -506,6 +543,7 @@ export const filters = async (type) => {
   let btn = div('', 'filters-submit-btn');
   btn.innerHTML = 'Подобрать';
   btn.onclick = () => {
+    document.getElementById('menu').click();
     discover('discover', type);
     btn.classList.remove('ready');
     history.pushState( { 

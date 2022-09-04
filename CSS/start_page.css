@@ -3,6 +3,7 @@ main.start {
     overflow: visible;
     position: static;
     height: auto;
+    margin: 0 0 -8px;
     background: linear-gradient(180deg,
     rgba(var(--md-sys-color-primary--rgb), 1),
     rgba(var(--md-sys-color-primary--rgb), 1) 30px,
@@ -11,10 +12,10 @@ main.start {
     var(--md-sys-color-background);
 
     display: grid;
-    grid: 230px 820px / 200px 1fr;
+    grid: 140px 750px / 200px 1fr;
 }
 main.start + header > form {
-    margin: 430px 20px 0;
+    margin: 270px 20px 0;
 }
 main.start + header > form > input#query {
     width: 570px;
@@ -25,8 +26,8 @@ main.start + header > form > input#query {
     align-self: start;
 
     width: 100%;
-    height: calc(100% + 42px);
-    margin: -42px 0 0;
+    height: calc(100% + 50px);
+    margin: -50px 0 0;
     border-radius: 18px;
     background: linear-gradient(to right, 
         rgba(var(--md-sys-color-primary--rgb), 0.97), 
@@ -44,17 +45,18 @@ main.start + header > form > input#query {
     align-self: start;
 
     position: absolute;
-    width: 600px;
-    margin: -25px 0 0;
-    left: 360px;
+    width: 570px;
+    margin: -45px 0 0;
+    left: 350px;
     color: var(--md-sys-color-on-primary);
 
     display: grid;
-    grid: 60px 40px 40px 20px 1fr / 1fr;
+    grid: 60px 15px 25px / 1fr;
     align-items: center;
 }
 .start-title-container > img {
-    width: 530px;
+    width: 350px;
+    margin: 0 0 0 150px;
 }
 .start-title-container > div:nth-child(1) {
     font-size: 60px;
@@ -63,30 +65,15 @@ main.start + header > form > input#query {
 .start-title-container > div:nth-child(2) {
     font-size: 20px;
     font-weight: 100;
-    margin: -30px 0 0 140px;
-}
-.start-title-container > div:nth-child(4) {
-    margin: 5px 0 0 5px;
-    font-size: 20px;
-    font-weight: 500;
-    color: rgba(var(--md-sys-color-surface--rgb), 0.8);
+    margin: -15px 0 0 140px;
 }
 #start-container {
     grid-column: 1 / -1;
     grid-row: 2 / 3;
 
     display: grid;
-    grid: 30px 380px 30px 380px / 1fr;
+    grid: 30px 345px 30px 345px / 1fr;
     position: relative;
-}
-main.start > div > div > .tile.loading {
-    opacity: 1;
-}
-main.start > div > div > .tile {
-    display: grid;
-    grid: 237px 27px 30px 40px / 60px 117px;
-    opacity: 0;
-    transition: opacity 0.2s ease-in;
 }
 
 .start-popular,
@@ -94,14 +81,18 @@ main.start > div > div > .tile {
     grid-column: 1 / -1;
     position: relative;
 
-    height: 380px;
-    overflow: overlay;
-    padding: 10px;
+    height: min-content;
+    overflow: auto;
+    padding: 5px 10px;
 
     display: grid;
-    grid-template-columns: repeat(20, 190px);
+    grid-template-columns: repeat(20, 171px);
     justify-content: start;
     align-items: start;
+    gap: 8px;
+}
+.start-popular.person-tile {
+    grid-template-columns: repeat(10, 171px);
 }
 .start-popular-title {
     grid-row: 1 / 2;
@@ -118,7 +109,8 @@ main.start > div > div > .tile {
 .start-right-border,
 .start-left-border {
     position: absolute;
-    height: 810px;
+    bottom: 0;
+    height: 100%;
     width: 10px;
     z-index: 10;
 }
@@ -131,7 +123,7 @@ main.start > div > div > .tile {
 }
 .start-top-title,
 .start-popular-title {
-    padding: 10px 0 0 20px;
+    padding: 6px 0 0 20px;
     font-size: 20px;
     font-weight: 700;
     width: 400px;

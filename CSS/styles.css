@@ -17,9 +17,9 @@
 
 .test-div {
     position: fixed;
-    top: -10px;
-    left: 0;
-    width: 100vw;
+    top: 50vh;
+    right: 70vw;
+    width: 30vw;
     padding-bottom: 10px;
     background: red;
     color: black;
@@ -36,7 +36,11 @@ body {
     min-width: 1080px;
     padding: 0;
     margin: 0;
-    background: linear-gradient(180deg,
+    background: linear-gradient(0, 
+    rgba(var(--md-sys-color-primary--rgb), 0.05), 
+    rgba(var(--md-sys-color-primary--rgb), 0.05)),
+    var(--md-sys-color-background);
+    background: linear-gradient(to bottom,
     rgba(var(--md-sys-color-primary--rgb), 1),
     rgba(var(--md-sys-color-primary--rgb), 1) 80px,
     rgba(var(--md-sys-color-primary--rgb), 0.05) 80px, 
@@ -49,7 +53,7 @@ body {
     transition: all 0.5s linear;
 
     display: grid;
-    grid: 50px 1fr 8px / min-content 1fr 8px;
+    grid: 64px 1fr 8px / min-content 1fr 8px;
     grid-template-areas:
     "h h ."
     "n m ."
@@ -64,7 +68,7 @@ main { grid-area: m; }
 /* Header -------------------------------------------------------- */
 header {
     display: grid;
-    grid: 50px / 80px 240px 610px 1fr;
+    grid: 64px / 80px 240px 610px 1fr;
     align-items: center;
 }
 header > .logo {
@@ -83,12 +87,13 @@ header > .logo-overlay {
 header > .logo-overlay:hover {
     cursor: pointer;
 }
+header > .discover-on-mobile { display: none; }
 header > form {
     grid-column: 3 / 4;
     grid-row: 1 / 1;
     width: min-content;
     display: grid;
-    grid: 40px / 1fr 30px 70px 40px 40px;
+    grid: 48px / 48px 1fr 30px 70px 48px;
     z-index: 10;    
     transition: margin 0.1s linear;
 }
@@ -113,17 +118,17 @@ header > form > input {
 header > form > input#query {
     grid-row: 1 / -1;
     grid-column: 1 / -1;
-    width: 350px;
+    width: 660px;
     font-size: 20px;
     border-radius: 8px;
     background: rgba(var(--md-sys-color-surface--rgb), 0.3);
     transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
-    padding: 0 16px;
+    padding: 0 48px;
 }
-header > form > input#query.text-inside,
+/* header > form > input#query.text-inside,
 header > form > input#query:focus-within {
     width: 610px
-}
+} */
 header > form > input#query.text-inside,
 header > form > input#query:hover,
 header > form > input#query:focus-within {
@@ -141,7 +146,7 @@ header > form > input#query:focus-within::placeholder {
 
 header > form > input#year {
     grid-row: 1 / -1;
-    grid-column: 3 / 4;
+    grid-column: 4 / 5;
     font-size: 16px;
     background: transparent;
     display: flex;
@@ -158,7 +163,7 @@ header > form > input#year::placeholder {
 }
 header > form > label {
     grid-row: 1 / -1;
-    grid-column: 2 / 3;
+    grid-column: 3 / 4;
     font-size: 16px;
     align-self: center;
 }
@@ -183,18 +188,18 @@ header > form > button:hover {
 }
 #clear-btn {
     grid-row: 1 / -1;
-    grid-column: 4 / 5;
+    grid-column: 5 / 6;
 }
-#clear-btn::after {
+/* #clear-btn::after {
     content: '';
     height: 20px;
     width: 10px;
     margin: 0;
     border-right: thin solid rgba(var(--md-sys-color-primary--rgb), 0.2);
-}
+} */
 #submit-btn {
     grid-row: 1 / -1;
-    grid-column: 5 / 6;
+    grid-column: 1 / 2;
 }
 /* Nav ----------------------------------------------------------- */
 nav {
@@ -202,7 +207,7 @@ nav {
     height: 100vh;
     position: sticky;
     top: 0;
-    margin: -50px 0;
+    margin: -64px 0;
     transition: width 0.2s linear;
 
     display: grid;
@@ -235,8 +240,6 @@ nav > div, nav > div > span {
     align-items: center;
 }
 nav > div {
-    height: 56px;
-    width: 100%;
     justify-content: center;
     font-size: 12px;
     font-weight: 500;
@@ -277,7 +280,6 @@ nav > div.nav-active:hover > span {
     var(--md-sys-color-surface);
 }
 .nav-menu {
-    margin: 4px 0 20px;
     color: var(--md-sys-color-on-primary);
 }
 .nav-menu > div {
@@ -507,15 +509,14 @@ nav.menu-open > div.nav-active:after {
 }
 /* Main ---------------------------------------------------------- */
 main {
-    height: calc(100vh - 58px);
+    height: calc(100vh - 72px);
     position: relative;
     overflow-y: overlay;
     overflow-x: hidden;
     background: var(--md-sys-color-surface);
     border-radius: 16px;
     z-index: 1;
-    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.15), 
-                0px 1px 3px 1px rgba(0, 0, 0, 0.15);  
+    box-shadow: 0 2px 5px 1px rgb(64 60 67 / 16%);
 
     display: flex;
     justify-content: center;
@@ -526,8 +527,8 @@ main {
     padding: 8px;
 
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-    grid-template-rows: repeat(auto-fit, 390px);
+    grid-template-columns: repeat(auto-fill, minmax(171px, 1fr));
+    grid-template-rows: min-content;
     align-items: start;
     justify-content: start;
     justify-items: center;
@@ -556,21 +557,22 @@ main {
 
 /* Tile ---------------------------------------------------------- */
 .tile {
-    padding: 5px;
     color: var(--md-sys-color-on-surface);
 
     display: grid;
-    grid: 267px 27px 30px 50px / 60px 137px;
-    gap: 3px;
+    grid: 231px 25px 28px 47px / 60px 111px;
 
     opacity: 0;
     transition: opacity 0.2s ease-in;
 }
+.tile.person-tile {
+    grid: 231px 25px 10px 20px / 60px 111px;
+}
 .tile-overlay {
     grid-column: 1 / -1;
     grid-row: 1 / -1;
-    margin: -8px;
-    border-radius: 14px;
+    margin: -5px;
+    border-radius: 12px;
     z-index: 5;
     transition: border 0.3s cubic-bezier(0.19, 1, 0.22, 1);
     border: thin solid transparent;
@@ -601,11 +603,10 @@ main {
 
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 3px;
 }
 .title {
-    font-size: 16px;
-    font-weight: 400;
+    font-size: 15px;
 }
 .original-title { 
     font-size: 10px;
@@ -615,8 +616,8 @@ main {
 .release-date {
     grid-column: 2 / -1;
     grid-row: 3 / 4;
-    padding: 5px 3px 0 0;
-    font-size: 12px;
+    padding: 2px 2px 0 0;
+    font-size: 11px;
     font-weight: 400;
     line-height: 1;
 
@@ -628,10 +629,12 @@ main {
     content: 'Дата премьеры';
     font-size: 9px;
     font-weight: 100;
+    padding-right: 4px;
+    color: var(--md-sys-color-on-surface-variant);
 }
 .votes {
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
     margin-left: 8px;
     grid-column: 1 / -1;
     grid-row: 2 / 4;
@@ -641,24 +644,21 @@ main {
     filter: drop-shadow(0px 1px 2px rgb(0 0 0 / 0.4));
 }
 .votes > .vote-average {
-    font-size: 25px;
-    font-weight: 500;
+    font-size: 21px;
     font-stretch: 50%;
     fill: var(--md-sys-color-on-primary);
 }
 .votes > .arc, .votes > .circle {
     fill: none;
     stroke-linecap: round;
-    stroke-width: 5px;
+    stroke-width: 4px;
 }
 
 /* Load more button --------------------------------------------- */
 #load-more {
-    padding: 5px;
     color: rgba(var(--md-sys-color-primary--rgb), 0.1);
-
     display: grid;
-    grid: 100px 85px 198px / 200px;
+    grid: 100px 85px 152px / 171px;
     justify-items: center;
     align-items: center;
 }
@@ -709,10 +709,10 @@ main.start > div > div > .tile.loading > .votes {
     justify-self: end;
 }
 .tile.loading > .votes {
-    width: 65px;
-    height: 65px;
+    width: 57px;
+    height: 57px;
+    margin: -3px 0 0 5px;
     border: 5px solid var(--md-sys-color-surface);
-    margin: -5px 0 0 5px;
     filter: none;
 }
 main.start > div > div > .tile.loading > .titles,

@@ -12,7 +12,7 @@
     content: 'Сезоны';
     grid-column: 1 / -1;
     width: 400px;
-    margin: -35px 0 0;
+    margin: -40px 0 0;
     color: var(--md-sys-color-on-surface);
     font-size: 20px;
     font-weight: 600;
@@ -32,15 +32,18 @@
     justify-content: center;
     gap: 3px;
 }
-.tv-season-poster {
+.tv-season-poster,
+.tv-season-no-poster {
     grid-column: 1 / 2;
     grid-row: 1 / 2;
-    width: 200px;
-    height: 300px;
+    width: 100%;
     border-radius: 8px;
     box-shadow: 0px 1px 2px rgb(0 0 0 / 15%), 
                 0px 1px 3px 1px rgb(0 0 0 / 15%);
 
+}
+.tv-season-no-poster {
+    opacity: 0.2;
 }
 .tv-season-number {
     grid-column: 1 / 2;
@@ -86,27 +89,28 @@
 }
 .tv-season-close-btn {
     position: absolute;
-    top: 15px;
-    right: 15px;
-    font-size: 50px;
-    font-variation-settings: 'FILL' 0;
+    height: 40px;
+    padding: 0 24px 0 16px;
+    border-radius: 20px;
+    top: 10px;
+    right: 10px;
+    font-size: 22px;
     transition: all 0.2s linear;
-    color: rgba(var(--md-sys-color-primary--rgb), 0.4);
+    color: var(--md-sys-color-primary);
 
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 8px;
 }
-.tv-season-close-btn::before {
+.tv-season-close-btn::after {
     content: 'Закрыть';
     font-family: 'Roboto Flex', sans-serif;
-    font-size: 24px;
+    font-size: 18px;
     font-weight: 200;
 }
 .tv-season-close-btn:hover {
-    color: var(--md-sys-color-primary);
+    background: rgba(var(--md-sys-color-primary--rgb), 0.08);
     cursor: pointer;
-    font-variation-settings: 'FILL' 1;
 }
 
 /* TV Episodes ------------------------------------------------ */
@@ -115,20 +119,20 @@
     left: 0;
     width: 100%;
     height: 100%;
-    grid-column: auto;
-    grid-row: auto;
-
+    grid-column: unset;
+    grid-row: unset;
     z-index: 20;
     background: rgba(var(--md-sys-color-surface--rgb), 0.8);
     backdrop-filter: blur(5px);
     border-radius: 16px;
-    grid: 10px 300px 1fr / 220px 1fr;
+
+    grid: 40px 280px 30px 1fr / 200px 100px 1fr;
+    gap: 0;
 }
 .tv-season.episodes > .tv-season-name {
-    grid-column: 2 / 3;
-    grid-row: 2 / 3;
-    font-size: 30px;
-    font-weight: 400;
+    grid-column: 1 / 2;
+    grid-row: 3 / 4;
+    font-size: 20px;
 }
 .tv-season.episodes > .tv-season-episode-count,
 .tv-season.episodes > .tv-season-overlay {
@@ -136,32 +140,29 @@
 }
 .tv-season-overview {
     position: absolute;
-    top: 100px;
-    left: 255px;
+    top: 400px;
+    left: 30px;
     font-size: 16px;
     font-weight: 200;
     line-height: 1;
-    max-width: calc(100% - 300px);
-    max-height: 228px;
-    overflow: hidden;
-    padding: 0 0 0 20px;
+    width: 300px;
+    height: calc(100% - 430px);
+    overflow: overlay;
 
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 10px;
 }
 .tv-season-overview::before {
     content: 'Обзор';
     font-size: 14px;
     font-weight: 100;
-    margin: 0 0 0 -20px;
 }
 #tv-episodes-container {
-    grid-column: 1 / 3;
-    grid-row: 3 / 4;
+    grid-column: 3 / -1;
+    grid-row: 2 / -1;
     margin: 0 20px;
-    padding: 5px;
-    border-radius: 10px;
+    padding: 0 8px 0 0;
     overflow-y: auto;
 
     display: flex;
@@ -172,34 +173,35 @@
 }
 .tv-episode {
     display: grid;
-    grid: 20px 20px 20px 1fr / 320px 1fr;
+    grid: 0 10px 20px 20px 1fr / 320px 1fr;
     gap: 10px;
+
+    background: rgba(var(--md-sys-color-surface--rgb), 0.8);
+    border-radius: 10px;
+    border: 1px solid rgba(var(--md-sys-color-outline--rgb), 0.3);
 }
 .tv-episode-still {
     grid-column: 1 / 2;
     grid-row: 1 / -1;
     width: 100%;
-    border-radius: 10px;
-    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.15), 
-                0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+    border-radius: 9px 0 0 9px;
 }
 .tv-episode-number {
     grid-column: 2 / 3;
-    grid-row: 1 / 2;
-    padding: 10px 0;
+    grid-row: 2 / 3;
     font-size: 14px;
     font-weight: 100;
     color: rgba(var(--md-sys-color-primary--rgb), 0.5);
 }
 .tv-episode-title {
     grid-column: 2 / 3;
-    grid-row: 2 / 3;
+    grid-row: 3 / 4;
     font-size: 24px;
-    font-weight: 400;
+    line-height: 0.6;
 }
 .tv-episode-air-date {
     grid-column: 2 / 3;
-    grid-row: 3 / 4;
+    grid-row: 4 / 5;
     display: flex;
     align-items: center;
     gap: 5px;
@@ -211,9 +213,9 @@
 }
 .tv-episode-overview {
     grid-column: 2 / 3;
-    grid-row: 4 / 5;
+    grid-row: 5 / 6;
     font-size: 16px;
     font-weight: 200;
-    line-height: 1;
-    padding-right: 10px;
+    line-height: 0.9;
+    padding-right: 0 10px 10px 0;
 }

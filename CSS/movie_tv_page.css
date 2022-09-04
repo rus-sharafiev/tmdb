@@ -97,24 +97,32 @@
 .videos-container {
     grid-area: videos;
     height: 300px;
-    overflow-x: hidden;
+    overflow: hidden;
     margin: 20px 0 0;
-    padding: 10px 10px 5px;
-    background: rgba(var(--md-sys-color-surface--rgb), 0.5);
+    padding: 10px 0 0;
+    background: rgba(var(--md-sys-color-surface--rgb), 0.8);
     border-radius: 10px;
-    box-shadow: 0px 1px 2px rgb(0 0 0 / 15%), 
-                0px 1px 3px 1px rgb(0 0 0 / 15%);
+    box-shadow: 0px 1px 2px rgb(0 0 0 / 10%), 
+                0px 1px 3px 1px rgb(0 0 0 / 10%);
+    
+    display: grid;
+    grid: 30px 260px / 400px;
+}
+.videos {
+    overflow-x: overlay;
+    overflow-y: hidden;
+    padding: 5px 10px 0;
 
     display: flex;
-    flex-direction: column;
-    gap: 10px;
+    gap: 15px;
 }
 .videos-container::before {
     content: 'Трейлеры | Видео';
+    margin: 0 10px;
+
     color: var(--md-sys-color-on-surface);
     font-size: 20px;
     font-weight: 600;
-    width: 400px;
 }
 .video {
     display: flex;
@@ -126,7 +134,6 @@
     font-size: 13px;
     font-weight: 200;
     line-height: 0.9;
-    width: 380px;
     height: 28px;
     padding: 0 10px;
     display: flex;
@@ -171,38 +178,43 @@
     font-weight: 100;
 }
 
-/* Movie Collection */.movie-collection {
+/* Movie Collection */
+.movie-collection {
     grid-column: 2 / -2;
     grid-row: 18 / 19;
 
+    width: fit-content;
+    overflow: hidden;
     margin: 10px 0 0;
-    padding: 10px 10px 5px;
+    padding: 10px 0 0;
     color: var(--md-sys-color-on-surface);
-    background: rgba(var(--md-sys-color-surface--rgb), 0.5);
+    background: rgba(var(--md-sys-color-surface--rgb), 0.8);
     border-radius: 10px;
-    box-shadow: 0px 1px 2px rgb(0 0 0 / 15%), 
-                0px 1px 3px 1px rgb(0 0 0 / 15%);
+    box-shadow: 0px 1px 2px rgb(0 0 0 / 10%), 
+                0px 1px 3px 1px rgb(0 0 0 / 10%);
     line-height: 0.8;
     
     opacity: 0;
     transition: opacity 0.2s ease-in;
 
     display: grid;
-    grid: 230px 115px / 400px 1fr;
+    grid: 230px 65px / 405px 1fr;
 }
 .movie-collection-name {
     grid-column: 1 / 2;
     grid-row: 2 / 3;
-    min-width: 380px;
+    max-width: 380px;
     padding: 0 10px;
-    display: flex;
     font-size: 20px;
     font-weight: 600;
+    
+    display: flex;
 }
 .movie-collection-backdrop {
     grid-column: 1 / 2;
     grid-row: 1 / 2;
     width: 380px;
+    margin-left: 10px;
     border-radius: 8px;
     box-shadow: 0px 1px 2px rgb(0 0 0 / 15%), 
                 0px 1px 3px 1px rgb(0 0 0 / 15%);
@@ -210,33 +222,32 @@
 #parts-container {
     grid-column: 2 / -1;
     grid-row: 1 / -1;
-    padding: 5px;
-    border-radius: 10px;
+
+    padding: 0 10px;
     overflow-x: overlay;
     overflow-y: hidden;
 
     display: grid;
-    grid-template-columns: repeat(auto-fill, 170px);
-    grid-template-rows: repeat(auto-fit, 330px);
     align-items: start;
     justify-content: start;
     justify-items: center;
-    gap: 10px;
 }
 #parts-container > .tile {
     padding: 5px;
     color: var(--md-sys-color-on-surface);
     display: grid;
-    grid: 214px 27px 30px 40px / 57px 100px;
-    gap: 3px;
+    grid: 195px 25px 26px 35px / 60px 87px;
     opacity: 0;
     transition: opacity 0.2s ease-in;
+}
+#parts-container > .tile > .poster.no-poster {
+    opacity: 0.2;
 }
 #parts-container > .tile > .titles >.title {
     font-size: 13px;
 }
 #parts-container > .tile > .release-date {
-    font-size: 10px;
+    font-size: 9px;
 }
 
 /* TV page -------------------------------------------------------------------------------------- */
@@ -385,7 +396,6 @@
 .tv-title {
     font-size: 40px;
     font-weight: 500;
-    text-shadow: 0px 1px 8px rgb(0 0 0 / 50%);
     line-height: 0.7;
 }
 .movie-original-title,
@@ -397,10 +407,12 @@
 .movie-genres,
 .tv-genres {
     grid-area: genres;
-    display: flex;
-    gap: 10px;
     font-size: 18px;
     font-weight: 200;
+
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 10px;
 }
 .movie-tagline,
 .tv-tagline {
@@ -496,30 +508,42 @@
 .movie-actors,
 .tv-actors {
     grid-area: actors;
-    height: 275px;
+    height: 270px;
+    width: fit-content;
     overflow: hidden;
-    margin: 0 0 20px;
-    padding: 35px 10px 10px;
-    background: rgba(var(--md-sys-color-surface--rgb), 0.5);
+    margin: 5px 0 0;
+    padding: 10px 0;
+    background: rgba(var(--md-sys-color-surface--rgb), 0.8);
     border-radius: 10px;
-    box-shadow: 0px 1px 2px rgb(0 0 0 / 15%), 
-                0px 1px 3px 1px rgb(0 0 0 / 15%);
+    box-shadow: 0px 1px 2px rgb(0 0 0 / 10%), 
+                0px 1px 3px 1px rgb(0 0 0 / 10%);
 
     display: grid;
-    grid-template-columns: repeat(auto-fit, 100px);
-    justify-content: space-evenly;
-    align-items: start;
-    gap: 10px;
+    grid: 30px 230px / 1fr;
 }
 .movie-actors::before,
 .tv-actors::before {
-    content: 'В главных ролях';
     grid-column: 1 / -1;
-    width: 400px;
-    margin: -25px 0 0;
+    grid-row: 1 / 2;
+    
+    content: 'В главных ролях';
+    margin: 0 10px;
     color: var(--md-sys-color-on-surface);
     font-size: 20px;
     font-weight: 600;
+}
+.movie-actors-container,
+.tv-actors-container {
+    grid-column: 1 / -1;
+    grid-row: 2 / 3;
+
+    padding: 5px 10px;
+    overflow-x: overlay;
+    overflow-y: hidden;
+
+    display: grid;
+    align-items: start;
+    gap: 10px;
 }
 .movie-actor,
 .tv-actor {
@@ -570,40 +594,53 @@
 .tv-suggested {
     grid-column: 2 / -2;
     grid-row: -3 / -2;
-    height: 360px;
-    overflow: hidden;
+
+    width: fit-content;
+    min-width: 655px;
     margin: 10px 0 0;
-    padding: 35px 10px 10px;
-    background: rgba(var(--md-sys-color-surface--rgb), 0.5);
+    padding: 10px 0 0;
+    overflow: hidden;
+    background: rgba(var(--md-sys-color-surface--rgb), 0.8);
     border-radius: 10px;
-    box-shadow: 0px 1px 2px rgb(0 0 0 / 15%), 
-                0px 1px 3px 1px rgb(0 0 0 / 15%);
+    box-shadow: 0px 1px 2px rgb(0 0 0 / 10%), 
+                0px 1px 3px 1px rgb(0 0 0 / 10%);
 
     display: grid;
-    grid-template-columns: repeat(auto-fit, 160px);
-    justify-content: space-evenly;
-    align-items: start;
-    gap: 5px;
+    grid: 30px 305px / 1fr;
 
     opacity: 0;
     transition: opacity 0.2s ease-in;
 }
 .movie-suggested::before,
 .tv-suggested::before {
-    content: 'Рекомендуется к просмотру';
     grid-column: 1 / -1;
-    width: 400px;
-    margin: -25px 0 0;
+    grid-row: 1 / 2;
+
+    content: 'Рекомендуется к просмотру';
+    margin: 0 10px;
     color: var(--md-sys-color-on-surface);
     font-size: 20px;
     font-weight: 600;
 }
-.movie-suggested > .tile,
-.tv-suggested > .tile {
-    grid: 195px 27px 30px 40px / 60px 87px;
+.movie-suggested-container,
+.tv-suggested-container {
+    grid-column: 1 / -1;
+    grid-row: 2 / 3;
+
+    padding: 5px 10px 0;
+    overflow-y: hidden;
+    overflow-x: overlay;
+
+    display: grid;
+    align-items: start;
+    gap: 5px;
 }
-.movie-suggested > .tile > .poster,
-.tv-suggested > .tile > .poster {
+.movie-suggested-container > .tile,
+.tv-suggested-container > .tile {
+    grid: 200px 25px 25px 40px / 60px 90px;
+}
+.movie-suggested-container > .tile > .poster,
+.tv-suggested-container > .tile > .poster {
     width: 150px;
     height: 225px;
 }
