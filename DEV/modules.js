@@ -76,8 +76,8 @@ export const vibrantStyles = async (path) => {
     }
     .movie, .tv {
       background: linear-gradient(0,
-        rgba(${rgbL[0]}, ${rgbL[1]}, ${rgbL[2]}, 0.1), 
-        rgba(${rgbL[0]}, ${rgbL[1]}, ${rgbL[2]}, 0.1)),
+        rgba(${rgbL[0]}, ${rgbL[1]}, ${rgbL[2]}, 0.2), 
+        rgba(${rgbL[0]}, ${rgbL[1]}, ${rgbL[2]}, 0.2)),
         var(--md-sys-color-surface);
     }`;
   });
@@ -162,7 +162,9 @@ export const mediaVideos = async (data) => {
 
   if (data.results.length == 0) {
     let noVideo = await text('Нет видео', 'movie-no-videos');
-    videosSubContainer.append(noVideo);
+    let icon = await text('movie', 'movie-no-videos-icon material-symbols-rounded');
+    document.fonts.load("24px Material Symbols Rounded").then( () => noVideo.append(icon));
+    videosSubContainer.append(noVideo)
   } else {
     let videos = data.results;
     videos.map( async (video) => {
@@ -572,4 +574,95 @@ export const setFilters = (sort, order, minRating, maxRating, minVotes, maxVotes
   if (maxVotes) document.getElementById('max-votes').value = maxVotes;
   if (minDate) document.getElementById('min-year').value = minDate;
   if (maxDate) document.getElementById('max-year').value = maxDate;
+}
+
+export const about = () => {
+  let main = document.querySelector('main');
+  if (main.style.overflow == 'hidden') return;
+
+  main.style.overflow = 'hidden';
+  let container = document.createElement('div');
+    container.id = 'about-container';
+    container.style.top = main.scrollTop + 'px';
+    
+  let closeBtn = document.createElement('div');
+    closeBtn.classList.add('about-close-btn', 'material-symbols-rounded');
+    document.fonts.load("24px Material Symbols Rounded").then( () => closeBtn.innerText = 'close' );
+    closeBtn.onclick = () => {
+      container.style.opacity = 0;
+      setTimeout( () => main.removeChild(container), '200');
+      main.style = null;
+    }
+    container.append(closeBtn);
+
+  let selectCategory = document.createElement('div'); selectCategory.classList.add('about-select');
+    let ar1 = document.createElement('div'); ar1.innerText = 'west'; ar1.classList.add('material-symbols-rounded');
+    let ar2 = document.createElement('div'); ar2.innerText = 'west'; ar2.classList.add('material-symbols-rounded');
+    let ar3 = document.createElement('div'); ar3.innerText = 'west'; ar3.classList.add('material-symbols-rounded');
+    document.fonts.load("24px Material Symbols Rounded").then( () => selectCategory.append(ar1, ar2, ar3) );
+
+    let title = document.createElement('div'); title.innerText = 'Выберете категорию';
+      let subtitle = document.createElement('span'); subtitle.innerText = 'от этого будет зависеть поиск';
+      let descr = document.createElement('span'); descr.innerText = 
+      'Если в стоке поиска есть запрос, то смена категории приведет к новому поиску по этому запросу. Если строка поиска пуста - откроется стартовая страница категории.';
+      title.append(subtitle, descr);
+    selectCategory.append(title);
+    container.append(selectCategory);
+
+  let votesInfo = document.createElement('div'); votesInfo.classList.add('about-votes');
+    let hightVotes = document.createElement('div'); hightVotes.innerText = 'Цветной цветовой индикатор вокруг рейтинга означает, что количество проголосовавших за него превышает 100 человек и как следсвие данный рейтинг дает более объективную оценку произведению.'; votesInfo.append(hightVotes);
+    let lowVotes = document.createElement('div'); lowVotes.innerText = 'Если же цветовая шкала серая, то проголосовавших меньше 100, а может даже всего один человек. В этом случае к рейтингу стоит относиться скептически.'; votesInfo.append(lowVotes);
+    votesCircle(7.2, 44, 50, 'about-hight-votes', 1000).then(el => votesInfo.append(el));
+    votesCircle(9.6, 44, 50, 'about-low-votes', 1).then(el => votesInfo.append(el));
+    container.append(votesInfo);
+
+  let license = document.createElement('div'); license.classList.add('about-tmdb');
+    let tmdbLogo = new Image(80, 80); tmdbLogo.src = 'IMG/tmdb_logo.svg';
+    let tmdbLicense = document.createElement('div'); tmdbLicense.classList.add('about-tmdb-license');
+      tmdbLicense.innerText = 'Это приложение использует TMDB API, но не одобрено и не сертифицировано TMDB.\nThis product uses the TMDB API but is not endorsed or certified by TMDB.';
+    let licenseInfo = document.createElement('div'); licenseInfo.classList.add('about-license-info');
+      licenseInfo.innerText = 'Данное приложение использует материалы предоставляемые TMDB и на все материалы распространяются условия использования расположенные по ';
+      let licenseLink = document.createElement('a'); licenseLink.href = 'https://www.themoviedb.org/terms-of-use'; licenseLink.innerText = 'ссылке'; licenseInfo.append(licenseLink);
+    license.append(tmdbLogo, tmdbLicense, licenseInfo); container.append(license);
+
+  let searchInfo = document.createElement('div'); searchInfo.classList.add('about-search-info');
+    let img = new Image(660); img.src = 'IMG/search_field.svg'; img.classList.add('about-search-field');
+    let infoSearchBtn = document.createElement('div'); infoSearchBtn.innerText = 'Начать поиск';
+    let infoInputField = document.createElement('div'); infoInputField.innerText = 'Текст поиска';
+    let infoYearField = document.createElement('div'); infoYearField.innerText = 'Год выхода в прокат (не обязательно)';
+    let infoCloseBtn = document.createElement('div'); infoCloseBtn.innerText = 'Очистить поле поиска';
+
+    searchInfo.append(img, infoSearchBtn, infoInputField, infoYearField, infoCloseBtn);
+    container.append(searchInfo);
+    
+  let footer = document.createElement('div'); footer.classList.add('about-made-by');
+  let madeBy = document.createElement('div');
+    madeBy.classList.add('about-made-by-title'); 
+    madeBy.innerHTML = `Дизайн и разработка `;
+    let madeBySpan = document.createElement('a'); 
+        madeBySpan.classList.add('about-made-by-title-link'); 
+        madeBySpan.innerHTML = 'rus-sharafiev';
+        madeBySpan.href = 'https://github.com/rus-sharafiev'; 
+        madeBySpan.target = "_blank";
+    madeBy.append(madeBySpan);
+
+  let cert = document.createElement('div'); cert.classList.add('about-cert');
+    cert.innerText = 'RU · TMDB © 2022';
+    
+  let sourceCodeLogo = document.createElementNS("http://www.w3.org/2000/svg", "svg"); sourceCodeLogo.setAttribute('viewBox', '0 0 32.58 31.77');
+    const path = document.createElementNS("http://www.w3.org/2000/svg", 'path');
+    path.setAttribute('d','M16.29,0a16.29,16.29,0,0,0-5.15,31.75c.82.15,1.11-.36,1.11-.79s0-1.41,0-2.77C7.7,29.18,6.74,26,6.74,26a4.36,4.36,0,0,0-1.81-2.39c-1.47-1,.12-1,.12-1a3.43,3.43,0,0,1,2.49,1.68,3.48,3.48,0,0,0,4.74,1.36,3.46,3.46,0,0,1,1-2.18c-3.62-.41-7.42-1.81-7.42-8a6.3,6.3,0,0,1,1.67-4.37,5.94,5.94,0,0,1,.16-4.31s1.37-.44,4.48,1.67a15.41,15.41,0,0,1,8.16,0c3.11-2.11,4.47-1.67,4.47-1.67A5.91,5.91,0,0,1,25,11.07a6.3,6.3,0,0,1,1.67,4.37c0,6.26-3.81,7.63-7.44,8a3.85,3.85,0,0,1,1.11,3c0,2.18,0,3.94,0,4.47s.29.94,1.12.78A16.29,16.29,0,0,0,16.29,0Z'); 
+    sourceCodeLogo.append(path);
+  let sourceCode = document.createElement('a'); 
+    sourceCode.classList.add('about-made-by-source'); 
+    sourceCode.innerHTML = '&lt; / Исходный код &gt;'; 
+    sourceCode.href = 'https://github.com/rus-sharafiev/tmdb';
+    sourceCode.target = "_blank";
+    sourceCode.append(sourceCodeLogo);
+
+    footer.append(sourceCode, cert, madeBy);
+    container.append(footer);
+  
+  main.append(container);
+  setTimeout( () => container.style.opacity = 1, '1');
 }

@@ -23,7 +23,7 @@
                     0px 2px 6px 2px rgba(0 0 0 / 15%);
 
         display: grid;
-        grid: 10px 15px 10px 40px 10px / 10px 1fr 1fr 10px;
+        grid: 10px 15px 10px 40px 10px / 10px 1fr 40px 10px;
     }
     header > .logo, 
     header > .logo-overlay {
@@ -34,20 +34,21 @@
     }
     header > .discover-on-mobile {
         grid-column: 3 / 4;
-        grid-row: 2 / 3;
-        color: var(--md-sys-color-secondary);
-        margin-right: 15px;
+        grid-row: 4 / 5;
+        font-size: 40px;
         font-weight: 100;
+        margin-right: -5px;
+        color: var(--md-sys-color-on-primary);
 
         display: flex;
         align-items: center;
         justify-content: flex-end;
         gap: 5px;
     }
-    header > .discover-on-mobile::after {
-        content: 'подбор';
-        font-family: 'Roboto Flex';
-        font-size: 16px;
+    main.start + header > .discover-on-mobile {
+        position: absolute;
+        top: 160px;
+        right: 10px;
     }
     header > form {
         grid-column: 2 / 4;
@@ -55,14 +56,26 @@
         grid: 40px / 48px 1fr 30px 70px 48px;
         transition: all 0.2s linear;
     }
-    header > form > input#query.text-inside, 
-    header > form > input#query:focus-within,
     header > form > input#query,
     main.start + header > form > input#query {
-        width: calc(100vw - 20px);
+        width: calc(100vw - 60px);
         border-radius: 20px;
     }
-
+    main.start + header > form > input#query.text-inside, 
+    main.start + header > form > input#query:focus-within,
+    header > form > input#query.text-inside, 
+    header > form > input#query:focus-within {
+        width: calc(100vw - 20px);
+    }
+    #header-about {
+        grid-column: 3 / 4;
+        grid-row: 2 / 3;
+        font-size: 20px;
+        font-weight: 200;
+    }
+    #header-about::before {
+        font-size: 16px;
+    }
     .mobile-search {
         grid-column: 3 / 4;
         grid-row: 1 / -1;
@@ -105,7 +118,7 @@
         background: linear-gradient(300deg, 
                     rgba(var(--md-sys-color-primary--rgb), 0.08), 
                     rgba(var(--md-sys-color-primary--rgb), 0.08)), 
-                    rgba(var(--md-sys-color-surface--rgb), 0.8);
+                    rgba(var(--md-sys-color-surface--rgb), 0.9);
         box-shadow: 0px 1px 2px rgba(0 0 0 / 15%), 
                     0px 2px 6px 2px rgba(0 0 0 / 15%);
     }
@@ -145,11 +158,23 @@
     nav.menu-open {
         width: 100vw;
     }
+    nav.menu-open::before {
+        content: '';
+        position: fixed;
+        width: 100vw;
+        height: 100vh;
+        bottom: 0;
+        left: 0;
+        background: rgba(var(--md-sys-color-primary--rgb), 0.8);
+    }
     #nav-menu-list {
         position: fixed;
-        height: 100vh;
-        width: 100vw;
-        bottom: 0;
+        height: min-content;
+        width: min-content;        
+        min-width: 50px;
+        min-height: 50px;
+        left: -100%;
+        bottom: 10px;
         padding: 20px;
         background: linear-gradient(0, 
                         rgba(var(--md-sys-color-primary--rgb), 0.05), 
@@ -158,8 +183,27 @@
         box-shadow: 0px 1px 2px rgb(0 0 0 / 15%), 
                         0px 1px 3px 1px rgb(0 0 0 / 15%);
         border: none;
-        border-radius: 10px;
+        border-radius: 23px;
         gap: 10px;
+        transition: left 0.2s linear;
+    }
+    #nav-menu-list.opened {        
+        left: 10px;
+    }
+    #nav-menu-list > .list-close-btn {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+
+        height: 40px;
+        width: 40px;
+        color: var(--md-sys-color-on-primary);
+        border-radius: 20px;
+        background: var(--md-sys-color-primary);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        justify-content: center;
     }
     .filters,
     #filters-submit-btn {
@@ -242,9 +286,9 @@
         position: absolute;
         transition: unset;
     }
-    main.start + header > form > input#query {
+    /* main.start + header > form > input#query {
         width: calc(100vw - 20px);
-    }
+    } */
     #start-container {
         display: grid;
         grid: 40px 345px 40px 345px / 1fr;
@@ -460,6 +504,9 @@
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     }
+    .about-close-btn, .tv-season-close-btn {
+        top: 90px;
+    }
     .tv-studio {
         display: none;
     }
@@ -473,7 +520,7 @@
         padding-left: 5px;
     }
     .tv-season.episodes {
-        padding: 20px 8px 80px;
+        padding: 100px 8px 80px;
         border-radius: 0;
         grid: 120px 50px 1fr / 110px 1fr;
     }
@@ -564,5 +611,30 @@
     .person-tvs::before {
         width: 100%;
         margin: -30px 0 0;
+    }
+
+    /* About --------------------------------------------------------- */
+    #about-container {
+        overflow: overlay;
+        padding: 130px 10px 100px;
+        display: grid;
+        grid: repeat(4, min-content) / 1fr;
+        grid-template-areas: 
+        'c'
+        'v'
+        'i'
+        'f';
+        gap: 10px;
+    }
+    .about-select {
+        display: grid;
+        grid: repeat(3, min-content) / 0 1fr;
+        gap: 0;
+    }
+    .about-select > div:nth-child(2),
+    .about-select > div:nth-child(3),
+    .about-select > div:nth-child(4),
+    .about-search-info {
+        display: none;
     }
 }

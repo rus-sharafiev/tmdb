@@ -87,6 +87,7 @@
     border-radius: 14px;
     z-index: 5;
 }
+.about-close-btn,
 .tv-season-close-btn {
     position: absolute;
     height: 40px;
@@ -102,12 +103,14 @@
     align-items: center;
     gap: 8px;
 }
+.about-close-btn::after,
 .tv-season-close-btn::after {
     content: 'Закрыть';
     font-family: 'Roboto Flex', sans-serif;
     font-size: 18px;
     font-weight: 200;
 }
+.about-close-btn:hover,
 .tv-season-close-btn:hover {
     background: rgba(var(--md-sys-color-primary--rgb), 0.08);
     cursor: pointer;
@@ -217,5 +220,5 @@
     font-size: 16px;
     font-weight: 200;
     line-height: 0.9;
-    padding-right: 0 10px 10px 0;
+    padding: 0 10px 10px 0;
 }

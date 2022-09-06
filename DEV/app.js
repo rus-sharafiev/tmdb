@@ -185,6 +185,12 @@ const createHeader = async () => {
       searchOverlay.style.display = 'none';
       searchOverlay.style.opacity = '0';
 
+    const about = document.createElement('div');
+      about.id = 'header-about';
+      about.classList.add('material-symbols-rounded');
+      document.fonts.load("24px Material Symbols Rounded").then(  () => about.textContent = 'info');
+      about.onclick = () => load.about();
+
     searchForm.append(searchFormInput, searchFormYearLabel, searchFormYear);
     document.fonts.load("24px Material Symbols Rounded")
       .then( () => searchForm.append(searchFormSbmBtn, searchFormClrBtn));
@@ -199,7 +205,7 @@ const createHeader = async () => {
       history.pushState( { type: active[0].id, search: searchData.get('query'), year: searchData.get('year') }, '', '/' + active[0].id + '?search=' + searchData.get('query')); 
     }
 
-  return Promise.all([logo, logoOverlay, discoverOnMobile, searchOverlay, searchForm]);
+  return Promise.all([logo, logoOverlay, discoverOnMobile, searchOverlay, searchForm, about]);
 }
 
 // Header hide on scroll on mobile --------------------------------------------------------------
@@ -274,13 +280,11 @@ const navMenu = async () => {
     if (container.children[0].children[0].textContent == 'menu') {
       container.children[0].children[0].textContent = 'menu_open';
       nav.classList.add('menu-open');
-      document.getElementById('nav-menu-list').style.display = 'flex';
+      document.getElementById('nav-menu-list').classList.add('opened');
     } else {
       container.children[0].children[0].textContent = 'menu';
       nav.classList.remove('menu-open');
-      setTimeout(() => {
-        document.getElementById('nav-menu-list').style.display = 'none';
-      }, "200")
+      document.getElementById('nav-menu-list').classList.remove('opened');
     };
   }
 
@@ -292,7 +296,7 @@ const createNav = async () => {
   let movies = navButton('Фильмы', 'Movie', 'movie');
   let tvs = navButton('Сериалы', 'Videocam', 'tv');
   let people = navButton('Люди', 'Person', 'person');
-  let listContainer = load.div('no-select', 'nav-menu-list'); listContainer.style.display = 'none';
+  let listContainer = load.div('no-select', 'nav-menu-list');
 
   return Promise.all([menu, movies, tvs, people, listContainer]);
 }
@@ -403,39 +407,52 @@ const searchMedia = async (query, year, type, page) => {
 const movieMenuList = async () => {
   let cont = document.getElementById('nav-menu-list');
   cont.innerHTML = '';
-  let topRated = await load.text('Топ фильмов', '', 'top_rated'); cont.append(topRated);
-  let popular = await load.text('Популярные', '', 'popular'); cont.append(popular);
-  let upcoming = await load.text('Новинки', '', 'upcoming'); cont.append(upcoming);
+  let title = load.text('Коллекции', 'list-title');
+  let topRated = load.text('Топ фильмов', '', 'top_rated');
+  let popular = load.text('Популярные', '', 'popular');
+  let upcoming = load.text('Новинки', '', 'upcoming');
+  let filters = load.filters('movie');
 
-  let filters = await load.filters('movie'); cont.append(filters);
+  (await Promise.all([title, topRated, popular, upcoming, filters])).map(el => cont.append(el));
+
+  let closeBtn = await load.text('close', 'list-close-btn material-symbols-rounded');
+  closeBtn.onclick = () => document.getElementById('menu').click();
+  document.fonts.load("24px Material Symbols Rounded").then( () => cont.append(closeBtn));
 
   cont.childNodes.forEach(element => {
-    if (element == filters) return;
+    if (element.id) {
     element.onclick = () => {
       discover('list', 'movie', element.id);
       history.pushState( { type: 'movie', list: element.id}, '', '/movie?list=' + element.id );
       document.getElementById('menu').click();
-    }
-  });
+    }}
+  });  
 }
 
 // Tv lists
 const tvMenuList = async () => {
   let cont = document.getElementById('nav-menu-list');
   cont.innerHTML = '';
-  let topRated = await load.text('Топ сериалов', '', 'top_rated'); cont.append(topRated);
-  let popular = await load.text('Популярные', '', 'popular'); cont.append(popular);
-  let upcoming = await load.text('В этом сезоне', '', 'on_the_air'); cont.append(upcoming);
 
-  let filters = await load.filters('tv'); cont.append(filters);
+  let title = load.text('Коллекции', 'list-title');
+  let topRated = load.text('Топ сериалов', '', 'top_rated');
+  let popular = load.text('Популярные', '', 'popular');
+  let upcoming = load.text('В этом сезоне', '', 'on_the_air');
+  let filters = load.filters('tv');
   
+  (await Promise.all([title, topRated, popular, upcoming, filters])).map(el => cont.append(el));  
+  
+  let closeBtn = await load.text('close', 'list-close-btn material-symbols-rounded');
+  closeBtn.onclick = () => document.getElementById('menu').click();
+  document.fonts.load("24px Material Symbols Rounded").then( () => cont.append(closeBtn));
+
   cont.childNodes.forEach(element => {
-    if (element == filters) return;
+    if (element.id) {
     element.onclick = () => {
       discover('list', 'tv', element.id);
       history.pushState( { type: 'tv', list: element.id}, '', '/tv?list=' + element.id );
       document.getElementById('menu').click();
-    }
+    }}
   });
 
 }
@@ -444,6 +461,10 @@ const tvMenuList = async () => {
 const personMenuList = async () => {
   let cont = document.getElementById('nav-menu-list');
   cont.innerHTML = '';
+  
+  let closeBtn = await load.text('close', 'list-close-btn material-symbols-rounded');
+  closeBtn.onclick = () => document.getElementById('menu').click();
+  document.fonts.load("24px Material Symbols Rounded").then( () => cont.append(closeBtn));
 }
 
 // Discover

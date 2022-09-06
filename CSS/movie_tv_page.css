@@ -150,13 +150,18 @@
 .movie-no-videos {
     width: 380px;
     height: 214px;
+    font-size: 30px;
     color: rgba(var(--md-sys-color-primary--rgb), 0.05);
     border: thin solid rgba(var(--md-sys-color-primary--rgb), 0.05);
     border-radius: 10px;
+
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 60px;
+    flex-direction: column-reverse;
+}
+.movie-no-videos-icon {
+    font-size: 65px;
 }
 .director,
 .screenplay {
