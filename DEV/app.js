@@ -119,7 +119,7 @@ const createHeader = async () => {
         searchOverlay.style.display = 'block';
         setTimeout(() => {
           searchOverlay.style.opacity = "1";
-        }, 1);
+        }, 10);
       }
       searchFormInput.onblur = () => {
         searchForm.style = null;
@@ -280,11 +280,9 @@ const navMenu = async () => {
     if (container.children[0].children[0].textContent == 'menu') {
       container.children[0].children[0].textContent = 'menu_open';
       nav.classList.add('menu-open');
-      document.getElementById('nav-menu-list').classList.add('opened');
     } else {
       container.children[0].children[0].textContent = 'menu';
       nav.classList.remove('menu-open');
-      document.getElementById('nav-menu-list').classList.remove('opened');
     };
   }
 
@@ -386,10 +384,10 @@ const searchMedia = async (query, year, type, page) => {
   if (!page) {
     main.scrollTop = 0;
     main.innerHTML = ''; main.removeEventListener('scroll', onScroll, false); args.length = 0;
-    tiles.map((tile) => { if (tile) { main.append(tile); setTimeout(() => { tile.style.opacity = '1';}, 50) }});
+    tiles.map((tile) => { if (tile) { main.append(tile); setTimeout(() => { tile.style.opacity = '1';}, 200) }});
   } else {
     Array.from(document.getElementsByClassName('loading')).forEach( (element) => { main.removeChild(element) });    
-    tiles.map((tile) => { if (tile) { main.append(tile); setTimeout(() => { tile.style.opacity = '1';}, 50) }});
+    tiles.map((tile) => { if (tile) { main.append(tile); setTimeout(() => { tile.style.opacity = '1';}, 200) }});
   }
 
   if (data.total_pages > 1) {
@@ -532,10 +530,10 @@ export const discover = async (a, type, list, page) => {
   if (!page) {
     main.scrollTop = 0;
     main.innerHTML = ''; main.removeEventListener('scroll', onScroll, false); args.length = 0;
-    tiles.map((tile) => { if (tile) { main.append(tile); setTimeout(() => { tile.style.opacity = '1';}, 50) }});
+    tiles.map((tile) => { if (tile) { main.append(tile); setTimeout(() => { tile.style.opacity = '1';}, 200) }});
   } else {
     Array.from(document.getElementsByClassName('loading')).forEach( (element) => { main.removeChild(element) });
-    tiles.map((tile) => { if (tile) { main.append(tile); setTimeout(() => { tile.style.opacity = '1';}, 50) }});
+    tiles.map((tile) => { if (tile) { main.append(tile); setTimeout(() => { tile.style.opacity = '1';}, 200) }});
   }
 
   if (data.total_pages > 1) {
@@ -656,12 +654,12 @@ export const showMovie = async (id) => {
     let backdrop = load.image(movie.belongs_to_collection.backdrop_path, 'movie-collection-backdrop');
     let title = load.text(movie.belongs_to_collection.name, 'movie-collection-name');
     (await Promise.all([backdrop, title])).map((el) => { if (el) collectionTile.append(el) } );
-    main.append(collectionTile); setTimeout(() => { collectionTile.style.opacity = '1';}, 10);
+    main.append(collectionTile); setTimeout(() => { collectionTile.style.opacity = '1';}, 200);
   }
  
   if (movie.recommendations.results.length != 0) {
     var suggested = document.createElement('div'); suggested.setAttribute('class', 'movie-suggested'); 
-    main.append(suggested); setTimeout(() => { suggested.style.opacity = '1';}, 10);
+    main.append(suggested); setTimeout(() => { suggested.style.opacity = '1';}, 200);
     var suggestedContainer = document.createElement('div'); suggestedContainer.setAttribute('class', 'movie-suggested-container'); 
     suggestedContainer.addEventListener("wheel", (evt) => {
       evt.preventDefault();
@@ -715,7 +713,7 @@ export const showMovie = async (id) => {
       return partTile;
     }));
   
-    partTiles.map((tile) => { if (tile) { parts.append(tile); setTimeout(() => { tile.style.opacity = '1';}, 10) }});
+    partTiles.map((tile) => { if (tile) { parts.append(tile); setTimeout(() => { tile.style.opacity = '1';}, 200) }});
   }
 
   if (movie.recommendations.results.length != 0) {
@@ -739,7 +737,7 @@ export const showMovie = async (id) => {
       return tile;
     }));
     suggestedContainer.style.gridTemplateColumns = 'repeat(' + qtt + ', 157px)';
-    tiles.map((tile) => { if (tile) { suggestedContainer.append(tile); setTimeout(() => { tile.style.opacity = '1';}, 10) }});
+    tiles.map((tile) => { if (tile) { suggestedContainer.append(tile); setTimeout(() => { tile.style.opacity = '1';}, 200) }});
     suggested.append(suggestedContainer);
   }
 }
@@ -818,7 +816,7 @@ export const showTv = async (id) => {
   
   if (tv.recommendations.results.length != 0) {
     let suggested = document.createElement('div'); suggested.setAttribute('class', 'tv-suggested');
-    main.append(suggested); setTimeout(() => { suggested.style.opacity = '1';}, 10);
+    main.append(suggested); setTimeout(() => { suggested.style.opacity = '1';}, 200);
     var suggestedContainer = document.createElement('div'); suggestedContainer.setAttribute('class', 'tv-suggested-container'); 
     suggestedContainer.addEventListener("wheel", (evt) => {
       evt.preventDefault();
@@ -845,7 +843,7 @@ export const showTv = async (id) => {
       return tile;
     }));
     suggestedContainer.style.gridTemplateColumns = 'repeat(' + qtt + ', 157px)';
-    tiles.map((tile) => { if (tile) { suggestedContainer.append(tile); setTimeout(() => { tile.style.opacity = '1';}, 10) }});
+    tiles.map((tile) => { if (tile) { suggestedContainer.append(tile); setTimeout(() => { tile.style.opacity = '1';}, 200) }});
     suggested.append(suggestedContainer);
   }
 }
@@ -906,9 +904,9 @@ export const showPerson = async (id) => {
   }));
 
   let movies = load.div('person-movies');
-  MovieTiles.map((tile) => { if (tile) { movies.append(tile); setTimeout(() => { tile.style.opacity = '1';}, 10) }});
+  MovieTiles.map((tile) => { if (tile) { movies.append(tile); setTimeout(() => { tile.style.opacity = '1';}, 200) }});
   let tvs = load.div('person-tvs');
-  TvTiles.map((tile) => { if (tile) { tvs.append(tile); setTimeout(() => { tile.style.opacity = '1';}, 10) }});
+  TvTiles.map((tile) => { if (tile) { tvs.append(tile); setTimeout(() => { tile.style.opacity = '1';}, 200) }});
 
   let content = await Promise.all([poster, name, dates, biography, movies, tvs]);
 
@@ -948,6 +946,9 @@ const startPageContainer = async (type) => {
     let ani = document.createElement('div'); ani.setAttribute('class', 'tile no-select loading');
     ani.innerHTML = '<div class="poster"></div><div class="titles"></div><div class="release-date"></div><div class="votes"></div>';
     popularContainer.append(ani);
+    setTimeout(() => {
+      ani.style.opacity = 1;
+    }, 100);
   }
 
   if (type != 'person') { // Person category contains one list only -------------------------------
@@ -964,6 +965,9 @@ const startPageContainer = async (type) => {
       let ani = document.createElement('div'); ani.setAttribute('class', 'tile no-select loading');
       ani.innerHTML = '<div class="poster"></div><div class="titles"></div><div class="release-date"></div><div class="votes"></div>';
       topContainer.append(ani);
+      setTimeout(() => {
+        ani.style.opacity = 1;
+      }, 100);
     }
   }
 
@@ -1010,7 +1014,7 @@ const startPageContainer = async (type) => {
     topContainer.append(el);
     setTimeout(() => {
       el.style.opacity = '1';
-    }, 50)
+    }, 200)
   }});
   }
   
@@ -1023,20 +1027,21 @@ const startPageContainer = async (type) => {
     popularContainer.append(el);
     setTimeout(() => {
       el.style.opacity = '1';
-    }, 50)
+    }, 200)
   }});
 
 }
 
-const startPage = async () => {
+const startPage = async () => {  
+  header.style = null;
   main.innerHTML = ''; main.setAttribute('class', 'start'); main.removeEventListener('scroll', onScroll, false);
   let titleOverlay = load.div('start-title-overlay');
   let titleContainer = load.div('start-title-container no-select');
 
-    let header = load.text('Добро пожаловать');
-    let subHeader = load.text('на русскоязычный неоффициальный сайт');
+    let title = load.text('Добро пожаловать');
+    let subTitle = load.text('на русскоязычный неоффициальный сайт');
     let tmdbLogo = new Image(); tmdbLogo.src = '/IMG/official_tmdb_logo.svg';
-    (await Promise.all([header, subHeader, tmdbLogo])).map(el => titleContainer.append(el));
+    (await Promise.all([title, subTitle, tmdbLogo])).map(el => titleContainer.append(el));
   
   let startContainer = document.createElement('div'); startContainer.id = 'start-container';
 

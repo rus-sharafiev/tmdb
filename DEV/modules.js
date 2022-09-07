@@ -1,7 +1,8 @@
 import '/DEV/vibrant.min.js';
 import { showPerson, discover } from '/DEV/app.js';
 
-// Div ------------------------------------------------------------------------------
+
+// Div ----------------------------------------------------------------------------------------------------------------------------------------
 export const div = (cls, id, container) => {
   let div = document.createElement('div'); 
   if (id) div.setAttribute('id', id);
@@ -11,7 +12,8 @@ export const div = (cls, id, container) => {
   return div;
 }
 
-// Image object ---------------------------------------------------------------------
+
+// Image object -------------------------------------------------------------------------------------------------------------------------------
 const proxyImage = (url) => {
   if (!url) return;
   let googleProxyURL = 'https://images1-focus-opensocial.googleusercontent.com/gadgets/proxy?container=focus&refresh=2592000&url=';
@@ -48,7 +50,8 @@ export const image = async (path, cls) => {
     })
 }
 
-// Vibrant styles generated inside <styles> -----------------------------------------
+
+// Vibrant styles generated inside <styles> ---------------------------------------------------------------------------------------------------
 export const vibrantStyles = async (path) => {
   let style = document.createElement('style');
   
@@ -85,7 +88,8 @@ export const vibrantStyles = async (path) => {
   return style;
 }
 
-// Text inside div ------------------------------------------------------------------
+
+// Text inside div ----------------------------------------------------------------------------------------------------------------------------
 export const text = async (text, cls, id) => {
     if (!text) return;
     let container = document.createElement('div');
@@ -97,7 +101,8 @@ export const text = async (text, cls, id) => {
     return container;
 }
 
-// Date in russian format -----------------------------------------------------------
+
+// Date in russian format ---------------------------------------------------------------------------------------------------------------------
 export const date = async (date, cls) => {
     if (date == undefined) return;
     let container = document.createElement('div');
@@ -117,7 +122,8 @@ export const date = async (date, cls) => {
     return container;
 }
 
-// Link with img inside -------------------------------------------------------------
+
+// Link with img inside -----------------------------------------------------------------------------------------------------------------------
 export const imgLink = async (imgSrc, imgWidth, url, cls) => {
     let link = document.createElement('a');
     let logo = new Image(imgWidth);
@@ -130,14 +136,16 @@ export const imgLink = async (imgSrc, imgWidth, url, cls) => {
     return link;
 }
 
-// convert to USD currency ----------------------------------------------------------
+
+// convert to USD currency --------------------------------------------------------------------------------------------------------------------
 export const formatUSD = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
     maximumFractionDigits: 0
 });
 
-// Release status--------------------------------------------------------------------
+
+// Release status------------------------------------------------------------------------------------------------------------------------------
 export const mediaStatus = (status) => {
     switch (status) {
       case 'Rumored': return 'Слухи';
@@ -151,7 +159,8 @@ export const mediaStatus = (status) => {
     }
 }
 
-// Videos related to media ----------------------------------------------------------
+
+// Videos related to media --------------------------------------------------------------------------------------------------------------------
 export const mediaVideos = async (data) => {
   let videosContainer = document.createElement('div'); videosContainer.setAttribute('class', 'videos-container');
   let videosSubContainer = document.createElement('div'); videosSubContainer.setAttribute('class', 'videos');   
@@ -180,7 +189,8 @@ export const mediaVideos = async (data) => {
   return videosContainer;
 }
 
-// Media rating inside SVG circle -------------------------------------------------------
+
+// Media rating inside SVG circle -------------------------------------------------------------------------------------------------------------
 const polarToCartesian = (centerX, centerY, radius, angleInDegrees) => {
     var angleInRadians = (angleInDegrees-90) * Math.PI / 180.0;
   
@@ -248,7 +258,8 @@ export const votesCircle = async (votes, rad, center, cls, vote_count) => {
     return svg;
 }
 
-// Element shows that nothing is found on query -------------------------------------
+
+// Element shows that nothing is found on query -----------------------------------------------------------------------------------------------
 export const nothingFound = async () => {
   document.body.querySelector('main').removeAttribute('class');
   let cont = document.createElement('div'); cont.setAttribute('class', 'nothing-found');
@@ -260,7 +271,8 @@ export const nothingFound = async () => {
   return cont;
 }
 
-// Actors starred -------------------------------------------------------------------
+
+// Actors starred -----------------------------------------------------------------------------------------------------------------------------
 export const actor = async (img, name, character, id) => {
   let cont = document.createElement('div'); cont.setAttribute('class', 'movie-actor');
 
@@ -277,16 +289,21 @@ export const actor = async (img, name, character, id) => {
   return cont;
 }
 
-// Tiles loading animation ----------------------------------------------------------
+
+// Tiles loading animation --------------------------------------------------------------------------------------------------------------------
 export const tileLoadingAnimation = async (qtt) => {
   for (let i = 0; i < qtt; i++) {
     let ani = document.createElement('div'); ani.setAttribute('class', 'tile no-select loading');
     ani.innerHTML = '<div class="poster"></div><div class="titles"></div><div class="release-date"></div><div class="votes"></div>';
-  document.body.querySelector('main').append(ani);
+    document.body.querySelector('main').append(ani);
+    setTimeout(() => {
+      ani.style.opacity = 1;
+    }, 200);
   }
 }
 
-// Animation while fetching JSON ----------------------------------------------------
+
+// Animation while fetching JSON --------------------------------------------------------------------------------------------------------------
 export const fetchAnimation = async () => {
   let ani = div('', 'fetch-animation');
   let cpi = new Image(48, 48); cpi.src = 'IMG/cpi.svg';
@@ -294,11 +311,12 @@ export const fetchAnimation = async () => {
   ani.style.top = `${document.querySelector('main').scrollTop}px`;
   document.body.querySelector('main').append(ani);
   setTimeout(() => {
-    ani.style.opacity = '1';
-  }, 1);
+    ani.style.opacity = 1;
+  }, 200);
 }
 
-// TV season tile and overlay with episodes -----------------------------------------
+
+// TV season tile and overlay with episodes ---------------------------------------------------------------------------------------------------
 export const seasonTile = async (tv_id, season, main_poster) => {
   let tileContainer = div('tv-season-contaner');
   let tile = div('tv-season');
@@ -319,24 +337,31 @@ export const seasonTile = async (tv_id, season, main_poster) => {
   tileOverlay.onclick = async () => {
     if (tile.classList.contains('episodes')) return;
 
+    document.querySelector('header').style.top = '-85px';
     tile.classList.add('episodes');
     tile.style.top = `${document.querySelector('main').scrollTop + 25}px`;
     document.querySelector('main').style.overflow = 'hidden';
     let overview; if (season.overview) overview = await text(season.overview, 'tv-season-overview');
-    let closeBtn = await text('close', 'tv-season-close-btn material-symbols-rounded');
+    let closeBtn = await text('close', 'tv-season-close-btn material-symbols-rounded'); 
+    tile.append(closeBtn);
     closeBtn.onclick = () => {
       tile.removeChild(episodes);
       tile.classList.remove('episodes');
       document.querySelector('main').style = null;
       tile.style = null;
+      closeBtn.remove();
     }
+
+    let episodes = div('no-select', 'tv-episodes-container'); 
+    if (overview) episodes.append(overview);
+    tile.append(episodes);
+
+    let cpi = new Image(48, 48); cpi.src = 'IMG/cpi.svg'; 
+    cpi.classList.add('tv-episodes-loading');
+    episodes.append(cpi); setTimeout(() => cpi.style.opacity = 1, 200);
 
     const response = await fetch(`https://kz.srrlab.ru/tv/season/?id=${tv_id}&n=${season.season_number}`);
     const seasonEpisodes = await response.json();
-
-    let episodes = div('no-select', 'tv-episodes-container');
-    if (overview) episodes.append(overview);
-    episodes.append(closeBtn);
 
     let episodeTiles = await Promise.all(seasonEpisodes.episodes.map( async (episode) => {
       let episodeTile = div('tv-episode');
@@ -349,11 +374,8 @@ export const seasonTile = async (tv_id, season, main_poster) => {
       return episodeTile;
     }));
   
-    episodeTiles.map( (el) => episodes.append(el) );
-    tile.append(episodes);
-    setTimeout(() => {
-      episodes.style.opacity = "1";
-    }, "100")
+    cpi.style.opacity = 0; setTimeout(() => cpi.remove(), 200);
+    setTimeout(() => episodeTiles.map( (el) => { episodes.append(el); setTimeout(() => el.style.opacity = 1, 200) }), 200);
   }
 
   (await Promise.all([poster, seasonNumber, title, episodeCount, tileOverlay])).map((el) => { if (el) tile.append(el) } );
@@ -361,7 +383,7 @@ export const seasonTile = async (tv_id, season, main_poster) => {
   return tileContainer;
 }
 
-// Movie collection sort by release date --------------------------------------------
+// Movie collection sort by release date ------------------------------------------------------------------------------------------------------
 export const sortByDate = (content) => {
   content.sort( (a, b) => {             
     let fist = a.release_date; if (fist == '') fist = '2100-01-01';
@@ -372,7 +394,8 @@ export const sortByDate = (content) => {
   });
 }
 
-// Person birthday and age ----------------------------------------------------------
+
+// Person birthday and age --------------------------------------------------------------------------------------------------------------------
 function ageText(age) {
     var txt;
     var count = age % 100;
@@ -420,7 +443,8 @@ export const personDates = async (birthday, deathday) => {
   return cont;
 }
 
-// Clear search field ---------------------------------------------------------------
+
+// Clear search field -------------------------------------------------------------------------------------------------------------------------
 export const clearSearch = () => {
   let searchFormInput = document.getElementById('query');
   let searchFormYear = document.getElementById('year');
@@ -435,7 +459,8 @@ export const clearSearch = () => {
   searchFormClrBtn.style.display = 'none';
 }
 
-// Discover filters -----------------------------------------------------------------
+
+// Discover filters ---------------------------------------------------------------------------------------------------------------------------
 export const filters = async (type) => {
   let cont = div('filters no-select');
 
@@ -576,6 +601,8 @@ export const setFilters = (sort, order, minRating, maxRating, minVotes, maxVotes
   if (maxDate) document.getElementById('max-year').value = maxDate;
 }
 
+
+// About overlay ------------------------------------------------------------------------------------------------------------------------------
 export const about = () => {
   let main = document.querySelector('main');
   if (main.style.overflow == 'hidden') return;
@@ -590,7 +617,7 @@ export const about = () => {
     document.fonts.load("24px Material Symbols Rounded").then( () => closeBtn.innerText = 'close' );
     closeBtn.onclick = () => {
       container.style.opacity = 0;
-      setTimeout( () => main.removeChild(container), '200');
+      setTimeout( () => main.removeChild(container), 200);
       main.style = null;
     }
     container.append(closeBtn);
@@ -664,5 +691,5 @@ export const about = () => {
     container.append(footer);
   
   main.append(container);
-  setTimeout( () => container.style.opacity = 1, '1');
+  setTimeout( () => container.style.opacity = 1, 200);
 }

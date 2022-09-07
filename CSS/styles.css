@@ -93,7 +93,7 @@ header > form {
     grid-row: 1 / 1;
     width: min-content;
     display: grid;
-    grid: 48px / 48px 1fr 30px 70px 48px;
+    grid: 48px / 48px 1fr 30px 60px 48px;
     z-index: 10;    
     transition: margin 0.1s linear;
 }
@@ -549,20 +549,26 @@ nav.menu-open > div.nav-active:after {
 #nav-menu-list {
     grid-column: 2 / 3;
     grid-row: 2 / -1;
-    height: 98%;
-    width: 241px;
+    height: calc(100% + 10px);
+    width: min-content;
     overflow: overlay;
     margin: -12px 0 0;
-    border-left: thin solid rgba(var(--md-sys-color-primary--rgb), 0.1);
     padding: 20px 10px;
     font-size: 16px;
     line-height: 0.8;
+    border-left: thin solid rgba(var(--md-sys-color-primary--rgb), 0.1);
     color: var(--md-sys-color-outline);
 
     display: flex;
     justify-content: flex-start;
     align-items: flex-start;
     gap: 15px;
+
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+nav.menu-open > #nav-menu-list {
+    opacity: 1;
 }
 #nav-menu-list > div {
     transition: all 0.2s cubic-bezier(0.19, 1, 0.22, 1);
@@ -890,9 +896,6 @@ main {
 }
 
 /* Tile Loading -------------------------------------------------- */
-.tile.loading {
-    opacity: 1;
-}
 .tile.loading > .tile-overlay {
     display: none;
 }

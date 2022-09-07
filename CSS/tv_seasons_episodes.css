@@ -129,7 +129,7 @@
     backdrop-filter: blur(5px);
     border-radius: 16px;
 
-    grid: 40px 280px 30px 1fr / 200px 100px 1fr;
+    grid: 30px 330px 30px 1fr / 230px 30px 1fr;
     gap: 0;
 }
 .tv-season.episodes > .tv-season-name {
@@ -143,13 +143,13 @@
 }
 .tv-season-overview {
     position: absolute;
-    top: 400px;
+    top: 430px;
     left: 30px;
     font-size: 16px;
     font-weight: 200;
     line-height: 1;
-    width: 300px;
-    height: calc(100% - 430px);
+    width: 250px;
+    height: calc(100% - 460px);
     overflow: overlay;
 
     display: flex;
@@ -164,13 +164,19 @@
 #tv-episodes-container {
     grid-column: 3 / -1;
     grid-row: 2 / -1;
-    margin: 0 20px;
-    padding: 0 8px 0 0;
     overflow-y: auto;
+    padding: 5px;
 
     display: flex;
     flex-direction: column;
     gap: 10px;
+
+    border-radius: 15px;
+    border: 1px solid rgba(var(--md-sys-color-outline--rgb), 0.1);
+}
+.tv-episodes-loading {
+    margin: auto;
+
     opacity: 0;
     transition: opacity 0.2s ease-in;
 }
@@ -182,6 +188,9 @@
     background: rgba(var(--md-sys-color-surface--rgb), 0.8);
     border-radius: 10px;
     border: 1px solid rgba(var(--md-sys-color-outline--rgb), 0.3);
+    
+    opacity: 0;
+    transition: opacity 0.2s ease-in;
 }
 .tv-episode-still {
     grid-column: 1 / 2;
