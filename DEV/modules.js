@@ -1,8 +1,6 @@
-import '/DEV/vibrant.min.js';
-import { showPerson, discover } from '/DEV/app.js';
+import './vibrant.min.js';
 
-
-// Div ----------------------------------------------------------------------------------------------------------------------------------------
+// Create div and set sctyle ------------------------------------------------------------------------------------------------------------------
 export const div = (cls, id, container) => {
   let div = document.createElement('div'); 
   if (id) div.setAttribute('id', id);
@@ -57,7 +55,6 @@ export const vibrantStyles = async (path) => {
   
   Vibrant.from(proxyImage(`https://image.tmdb.org/t/p/w92${path}`)).getPalette().then( palette => {
     
-    let rgb = palette.Vibrant.getRgb();
     let rgbD = palette.DarkVibrant.getRgb();
     let rgbL = palette.LightVibrant.getRgb();
 
@@ -272,24 +269,6 @@ export const nothingFound = async () => {
 }
 
 
-// Actors starred -----------------------------------------------------------------------------------------------------------------------------
-export const actor = async (img, name, character, id) => {
-  let cont = document.createElement('div'); cont.setAttribute('class', 'movie-actor');
-
-  let i = image(img, 'movie-actor-img');
-  let n = text(name, 'movie-actor-name');
-  let c = text(character, 'movie-actor-character');
-
-  (await Promise.all([i, n, c])).map( el => cont.append(el));
-
-  cont.onclick = () => {
-    showPerson(id);
-    history.pushState( { type: 'person', id: id}, '', '/person#' + id );
-  }
-  return cont;
-}
-
-
 // Tiles loading animation --------------------------------------------------------------------------------------------------------------------
 export const tileLoadingAnimation = async (qtt) => {
   for (let i = 0; i < qtt; i++) {
@@ -315,73 +294,6 @@ export const fetchAnimation = async () => {
   }, 200);
 }
 
-
-// TV season tile and overlay with episodes ---------------------------------------------------------------------------------------------------
-export const seasonTile = async (tv_id, season, main_poster) => {
-  let tileContainer = div('tv-season-contaner');
-  let tile = div('tv-season');
-
-  let poster;
-  if (season.poster_path) {
-    poster = image(season.poster_path, 'tv-season-poster');
-  } else {
-    poster = image(main_poster, 'tv-season-no-poster');
-  }
-
-  let seasonNumber = text(`${season.season_number}`, 'tv-season-number');
-  let title = text(season.name, 'tv-season-name'); 
-
-  let episodeCount = text(`Серий ${season.episode_count}`, 'tv-season-episode-count');
-  let tileOverlay = div('tv-season-overlay');
-
-  tileOverlay.onclick = async () => {
-    if (tile.classList.contains('episodes')) return;
-
-    document.querySelector('header').style.top = '-85px';
-    tile.classList.add('episodes');
-    tile.style.top = `${document.querySelector('main').scrollTop + 25}px`;
-    document.querySelector('main').style.overflow = 'hidden';
-    let overview; if (season.overview) overview = await text(season.overview, 'tv-season-overview');
-    let closeBtn = await text('close', 'tv-season-close-btn material-symbols-rounded'); 
-    tile.append(closeBtn);
-    closeBtn.onclick = () => {
-      tile.removeChild(episodes);
-      tile.classList.remove('episodes');
-      document.querySelector('main').style = null;
-      tile.style = null;
-      closeBtn.remove();
-    }
-
-    let episodes = div('no-select', 'tv-episodes-container'); 
-    if (overview) episodes.append(overview);
-    tile.append(episodes);
-
-    let cpi = new Image(48, 48); cpi.src = 'IMG/cpi.svg'; 
-    cpi.classList.add('tv-episodes-loading');
-    episodes.append(cpi); setTimeout(() => cpi.style.opacity = 1, 200);
-
-    const response = await fetch(`https://kz.srrlab.ru/tv/season/?id=${tv_id}&n=${season.season_number}`);
-    const seasonEpisodes = await response.json();
-
-    let episodeTiles = await Promise.all(seasonEpisodes.episodes.map( async (episode) => {
-      let episodeTile = div('tv-episode');
-        let still = image(episode.still_path, 'tv-episode-still');
-        let number = text(`Серия ${episode.episode_number}`, 'tv-episode-number');
-        let title = text(episode.name, 'tv-episode-title');
-        let overview = text(episode.overview, 'tv-episode-overview');
-        let onAir = date(episode.air_date, 'tv-episode-air-date');
-      (await Promise.all([still, number, title, overview, onAir])).map((el) => { if (el) episodeTile.append(el) } );
-      return episodeTile;
-    }));
-  
-    cpi.style.opacity = 0; setTimeout(() => cpi.remove(), 200);
-    setTimeout(() => episodeTiles.map( (el) => { episodes.append(el); setTimeout(() => el.style.opacity = 1, 200) }), 200);
-  }
-
-  (await Promise.all([poster, seasonNumber, title, episodeCount, tileOverlay])).map((el) => { if (el) tile.append(el) } );
-  tileContainer.append(tile);
-  return tileContainer;
-}
 
 // Movie collection sort by release date ------------------------------------------------------------------------------------------------------
 export const sortByDate = (content) => {
@@ -460,136 +372,7 @@ export const clearSearch = () => {
 }
 
 
-// Discover filters ---------------------------------------------------------------------------------------------------------------------------
-export const filters = async (type) => {
-  let cont = div('filters no-select');
-
-  //sort
-  let sortCont = div('sort-container');
-  let sort = document.createElement('select'); 
-    sort.id = 'filters-sort';
-    sort.onchange = () => btn.classList.add('ready');
-
-  let options = {
-    'popularity': 'по популярности',
-    'revenue': 'по сборам', 
-    'primary_release_date': 'по дате выхода', 
-    'original_title': 'по оригинальному названию', 
-    'vote_average': 'по рейтингу', 
-    'vote_count': 'по количеству голосов'
-  }
-
-  Object.entries(options).forEach(([key, value]) => {
-    let option = document.createElement('option'); option.value = key; option.innerHTML = value; sort.append(option);
-  });
-
-  let order = document.createElement('select'); order.id = 'filters-order';
-  let desc = document.createElement('option'); desc.value = 'desc'; desc.innerHTML = 'по убыванию'; order.append(desc);
-    let asc = document.createElement('option'); asc.value = 'asc'; asc.innerHTML = 'по возрастанию'; order.append(asc);
-    order.onchange = () => btn.classList.add('ready');
-  
-  sortCont.append(sort, order);
-
-  // rating
-  let ratingCont = div('rating-container');
-  let minRating = document.createElement('input');
-    minRating.type = 'number';
-    minRating.id = 'min-rating';
-    minRating.name = 'min_rating';
-    minRating.placeholder = '0';
-    minRating.min = 0; minRating.max = 10;
-    minRating.onchange = () => btn.classList.add('ready');
-  let minRatingLabel = document.createElement('label');
-    minRatingLabel.for = 'min-rating';
-    minRatingLabel.innerHTML = 'от';
-  
-  let maxRating = document.createElement('input');
-    maxRating.type = 'number';
-    maxRating.id = 'max-rating';
-    maxRating.name = 'max_rating';
-    maxRating.placeholder = '10';
-    maxRating.min = 0; maxRating.max = 10;
-    maxRating.onchange = () => btn.classList.add('ready');
-  let maxRatingLabel = document.createElement('label');
-    maxRatingLabel.for = 'max-rating';
-    maxRatingLabel.innerHTML = 'до';
-    
-  ratingCont.append(minRatingLabel, minRating, maxRatingLabel, maxRating); 
-
-  // votes
-  let votesCont = div('votes-container');
-  let minVotes = document.createElement('input');
-    minVotes.type = 'number';
-    minVotes.id = 'min-votes';
-    minVotes.name = 'min_votes';
-    minVotes.placeholder = '0';
-    minVotes.min = 0; minVotes.max = 100000;
-    minVotes.onchange = () => btn.classList.add('ready');
-  let minVotesLabel = document.createElement('label');
-    minVotesLabel.for = 'min-votes';
-    minVotesLabel.innerHTML = 'от';
-  
-  let maxVotes = document.createElement('input');
-    maxVotes.type = 'number';
-    maxVotes.id = 'max-votes';
-    maxVotes.name = 'max_votes';
-    maxVotes.placeholder = '40000';
-    maxVotes.min = 0; maxVotes.max = 99999;
-    maxVotes.onchange = () => btn.classList.add('ready');
-  let maxVotesLabel = document.createElement('label');
-    maxVotesLabel.for = 'max-votes';
-    maxVotesLabel.innerHTML = 'до';
-  
-  votesCont.append(minVotesLabel, minVotes, maxVotesLabel, maxVotes);
-
-  // year 
-  let yearCont = div('year-container');
-  let minYear = document.createElement('input');
-    minYear.type = 'date';
-    minYear.id = 'min-year';
-    minYear.name = 'min_year';
-    minYear.required = true;
-    minYear.onchange = () => {btn.classList.add('ready');}
-  let minYearLabel = document.createElement('label');
-    minYearLabel.for = 'min-year';
-    minYearLabel.innerHTML = ' с';
-  
-  let maxYear = document.createElement('input');
-    maxYear.type = 'date';
-    maxYear.id = 'max-year';
-    maxYear.name = 'max_year';
-    maxYear.required = true;
-    maxYear.onchange = () => btn.classList.add('ready');
-  let maxYearLabel = document.createElement('label');
-    maxYearLabel.for = 'max-year';
-    maxYearLabel.innerHTML = 'по';
-  
-  yearCont.append(minYearLabel, minYear, maxYearLabel, maxYear);
-   
-  // submit btn
-  let btn = div('', 'filters-submit-btn');
-  btn.innerHTML = 'Подобрать';
-  btn.onclick = () => {
-    document.getElementById('menu').click();
-    discover('discover', type);
-    btn.classList.remove('ready');
-    history.pushState( { 
-      type: type,
-      sort: sort.value, 
-      order: order.value,
-      minRating: minRating.value,
-      maxRating: maxRating.value,
-      minVotes: minVotes.value,
-      maxVotes: maxVotes.value,
-      minYear: minYear.value,
-      maxYear: maxYear.value
-    }, '', '/' + type + '?discover');
-  }
-
-  ([sortCont, ratingCont, votesCont, yearCont, btn]).map( (el) => cont.append(el));
-  return cont;
-}
-
+// Set values accordind to browser history ----------------------------------------------------------------------------------------------------
 export const setFilters = (sort, order, minRating, maxRating, minVotes, maxVotes, minDate, maxDate) => {
   if (sort) document.getElementById('filters-sort').value = sort;
   if (order) document.getElementById('filters-order').value = order;
@@ -599,97 +382,4 @@ export const setFilters = (sort, order, minRating, maxRating, minVotes, maxVotes
   if (maxVotes) document.getElementById('max-votes').value = maxVotes;
   if (minDate) document.getElementById('min-year').value = minDate;
   if (maxDate) document.getElementById('max-year').value = maxDate;
-}
-
-
-// About overlay ------------------------------------------------------------------------------------------------------------------------------
-export const about = () => {
-  let main = document.querySelector('main');
-  if (main.style.overflow == 'hidden') return;
-
-  main.style.overflow = 'hidden';
-  let container = document.createElement('div');
-    container.id = 'about-container';
-    container.style.top = main.scrollTop + 'px';
-    
-  let closeBtn = document.createElement('div');
-    closeBtn.classList.add('about-close-btn', 'material-symbols-rounded');
-    document.fonts.load("24px Material Symbols Rounded").then( () => closeBtn.innerText = 'close' );
-    closeBtn.onclick = () => {
-      container.style.opacity = 0;
-      setTimeout( () => main.removeChild(container), 200);
-      main.style = null;
-    }
-    container.append(closeBtn);
-
-  let selectCategory = document.createElement('div'); selectCategory.classList.add('about-select');
-    let ar1 = document.createElement('div'); ar1.innerText = 'west'; ar1.classList.add('material-symbols-rounded');
-    let ar2 = document.createElement('div'); ar2.innerText = 'west'; ar2.classList.add('material-symbols-rounded');
-    let ar3 = document.createElement('div'); ar3.innerText = 'west'; ar3.classList.add('material-symbols-rounded');
-    document.fonts.load("24px Material Symbols Rounded").then( () => selectCategory.append(ar1, ar2, ar3) );
-
-    let title = document.createElement('div'); title.innerText = 'Выберете категорию';
-      let subtitle = document.createElement('span'); subtitle.innerText = 'от этого будет зависеть поиск';
-      let descr = document.createElement('span'); descr.innerText = 
-      'Если в стоке поиска есть запрос, то смена категории приведет к новому поиску по этому запросу. Если строка поиска пуста - откроется стартовая страница категории.';
-      title.append(subtitle, descr);
-    selectCategory.append(title);
-    container.append(selectCategory);
-
-  let votesInfo = document.createElement('div'); votesInfo.classList.add('about-votes');
-    let hightVotes = document.createElement('div'); hightVotes.innerText = 'Цветной цветовой индикатор вокруг рейтинга означает, что количество проголосовавших за него превышает 100 человек и как следсвие данный рейтинг дает более объективную оценку произведению.'; votesInfo.append(hightVotes);
-    let lowVotes = document.createElement('div'); lowVotes.innerText = 'Если же цветовая шкала серая, то проголосовавших меньше 100, а может даже всего один человек. В этом случае к рейтингу стоит относиться скептически.'; votesInfo.append(lowVotes);
-    votesCircle(7.2, 44, 50, 'about-hight-votes', 1000).then(el => votesInfo.append(el));
-    votesCircle(9.6, 44, 50, 'about-low-votes', 1).then(el => votesInfo.append(el));
-    container.append(votesInfo);
-
-  let license = document.createElement('div'); license.classList.add('about-tmdb');
-    let tmdbLogo = new Image(80, 80); tmdbLogo.src = 'IMG/tmdb_logo.svg';
-    let tmdbLicense = document.createElement('div'); tmdbLicense.classList.add('about-tmdb-license');
-      tmdbLicense.innerText = 'Это приложение использует TMDB API, но не одобрено и не сертифицировано TMDB.\nThis product uses the TMDB API but is not endorsed or certified by TMDB.';
-    let licenseInfo = document.createElement('div'); licenseInfo.classList.add('about-license-info');
-      licenseInfo.innerText = 'Данное приложение использует материалы предоставляемые TMDB и на все материалы распространяются условия использования расположенные по ';
-      let licenseLink = document.createElement('a'); licenseLink.href = 'https://www.themoviedb.org/terms-of-use'; licenseLink.innerText = 'ссылке'; licenseInfo.append(licenseLink);
-    license.append(tmdbLogo, tmdbLicense, licenseInfo); container.append(license);
-
-  let searchInfo = document.createElement('div'); searchInfo.classList.add('about-search-info');
-    let img = new Image(660); img.src = 'IMG/search_field.svg'; img.classList.add('about-search-field');
-    let infoSearchBtn = document.createElement('div'); infoSearchBtn.innerText = 'Начать поиск';
-    let infoInputField = document.createElement('div'); infoInputField.innerText = 'Текст поиска';
-    let infoYearField = document.createElement('div'); infoYearField.innerText = 'Год выхода в прокат (не обязательно)';
-    let infoCloseBtn = document.createElement('div'); infoCloseBtn.innerText = 'Очистить поле поиска';
-
-    searchInfo.append(img, infoSearchBtn, infoInputField, infoYearField, infoCloseBtn);
-    container.append(searchInfo);
-    
-  let footer = document.createElement('div'); footer.classList.add('about-made-by');
-  let madeBy = document.createElement('div');
-    madeBy.classList.add('about-made-by-title'); 
-    madeBy.innerHTML = `Дизайн и разработка `;
-    let madeBySpan = document.createElement('a'); 
-        madeBySpan.classList.add('about-made-by-title-link'); 
-        madeBySpan.innerHTML = 'rus-sharafiev';
-        madeBySpan.href = 'https://github.com/rus-sharafiev'; 
-        madeBySpan.target = "_blank";
-    madeBy.append(madeBySpan);
-
-  let cert = document.createElement('div'); cert.classList.add('about-cert');
-    cert.innerText = 'RU · TMDB © 2022';
-    
-  let sourceCodeLogo = document.createElementNS("http://www.w3.org/2000/svg", "svg"); sourceCodeLogo.setAttribute('viewBox', '0 0 32.58 31.77');
-    const path = document.createElementNS("http://www.w3.org/2000/svg", 'path');
-    path.setAttribute('d','M16.29,0a16.29,16.29,0,0,0-5.15,31.75c.82.15,1.11-.36,1.11-.79s0-1.41,0-2.77C7.7,29.18,6.74,26,6.74,26a4.36,4.36,0,0,0-1.81-2.39c-1.47-1,.12-1,.12-1a3.43,3.43,0,0,1,2.49,1.68,3.48,3.48,0,0,0,4.74,1.36,3.46,3.46,0,0,1,1-2.18c-3.62-.41-7.42-1.81-7.42-8a6.3,6.3,0,0,1,1.67-4.37,5.94,5.94,0,0,1,.16-4.31s1.37-.44,4.48,1.67a15.41,15.41,0,0,1,8.16,0c3.11-2.11,4.47-1.67,4.47-1.67A5.91,5.91,0,0,1,25,11.07a6.3,6.3,0,0,1,1.67,4.37c0,6.26-3.81,7.63-7.44,8a3.85,3.85,0,0,1,1.11,3c0,2.18,0,3.94,0,4.47s.29.94,1.12.78A16.29,16.29,0,0,0,16.29,0Z'); 
-    sourceCodeLogo.append(path);
-  let sourceCode = document.createElement('a'); 
-    sourceCode.classList.add('about-made-by-source'); 
-    sourceCode.innerHTML = '&lt; / Исходный код &gt;'; 
-    sourceCode.href = 'https://github.com/rus-sharafiev/tmdb';
-    sourceCode.target = "_blank";
-    sourceCode.append(sourceCodeLogo);
-
-    footer.append(sourceCode, cert, madeBy);
-    container.append(footer);
-  
-  main.append(container);
-  setTimeout( () => container.style.opacity = 1, 200);
 }

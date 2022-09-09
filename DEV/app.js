@@ -1,6 +1,5 @@
 // import {Workbox} from 'workbox-window';
-// import {backgroudPosters} from '/DEV/background.js';
-import * as load from '/DEV/modules.js';
+import * as load from './modules.js';
 
 // if ('serviceWorker' in navigator) {
 //     const wb = new Workbox('/sw.js');
@@ -11,7 +10,6 @@ import * as load from '/DEV/modules.js';
 const header = document.createElement('header');
 const nav = document.createElement('nav');
 const main = document.createElement('main');
-// const test = document.createElement('div'); test.classList.add('test-div');
 
 // Load page
 document.body.onload = () => {
@@ -71,7 +69,7 @@ document.body.onload = () => {
   startPage();
 }
 
-// Header ---------------------------------------------------------------------------------------
+// Header --------------------------------------------------------------------------------------------------------------------------------------------------
 const createHeader = async () => {
   const logo = new Image(); logo.src = '/IMG/logo.svg'; logo.setAttribute('class', 'logo');
   const logoOverlay = load.div('logo-overlay');
@@ -185,11 +183,12 @@ const createHeader = async () => {
       searchOverlay.style.display = 'none';
       searchOverlay.style.opacity = '0';
 
-    const about = document.createElement('div');
-      about.id = 'header-about';
-      about.classList.add('material-symbols-rounded');
-      document.fonts.load("24px Material Symbols Rounded").then(  () => about.textContent = 'info');
-      about.onclick = () => load.about();
+    const aboutBtn = document.createElement('div');
+      aboutBtn.id = 'header-about';
+      aboutBtn.classList.add('material-symbols-rounded');
+      document.fonts.load("24px Material Symbols Rounded").then(  () => aboutBtn.textContent = 'info');
+      aboutBtn.onclick = () => about();
+      // aboutBtn.addEventListener('click', about, false);
 
     searchForm.append(searchFormInput, searchFormYearLabel, searchFormYear);
     document.fonts.load("24px Material Symbols Rounded")
@@ -205,10 +204,10 @@ const createHeader = async () => {
       history.pushState( { type: active[0].id, search: searchData.get('query'), year: searchData.get('year') }, '', '/' + active[0].id + '?search=' + searchData.get('query')); 
     }
 
-  return Promise.all([logo, logoOverlay, discoverOnMobile, searchOverlay, searchForm, about]);
+  return Promise.all([logo, logoOverlay, discoverOnMobile, searchOverlay, searchForm, aboutBtn]);
 }
 
-// Header hide on scroll on mobile --------------------------------------------------------------
+// Header hide on scroll on mobile -------------------------------------------------------------------------------------------------------------------------
 var prevScrollPosition = Math.round(main.scrollTop);
 var headerTopPosition = 0;
 function headerHide() {
@@ -219,8 +218,8 @@ function headerHide() {
     if (headerTopPosition > 0) headerTopPosition = 0;
   }
   if (prevScrollPosition < currentScrollPosition) {
-    if (headerTopPosition >= -85) headerTopPosition += delta;
-    if (headerTopPosition < -85) headerTopPosition = -85;
+    if (headerTopPosition >= -80) headerTopPosition += delta;
+    if (headerTopPosition < -80) headerTopPosition = -80;
   }
   header.style.top = headerTopPosition + 'px';
   prevScrollPosition = currentScrollPosition;
@@ -230,7 +229,7 @@ if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(naviga
   main.addEventListener('scroll', headerHide, false);
 }
 
-// Nav ------------------------------------------------------------------------------------------
+// Nav -----------------------------------------------------------------------------------------------------------------------------------------------------
 const navButton = async (txt, symb, id) => {
   let btn = document.createElement('div');
   let title = document.createTextNode(txt);
@@ -299,7 +298,7 @@ const createNav = async () => {
   return Promise.all([menu, movies, tvs, people, listContainer]);
 }
 
-// Search Tile ----------------------------------------------------------------------------------
+// Search Tile ---------------------------------------------------------------------------------------------------------------------------------------------
 const tileContent = async (media, type) => {
   let media_poster, media_title, media_original_title, media_release_date;
   switch (type) {
@@ -341,7 +340,7 @@ const tileContent = async (media, type) => {
 
 var args = []; // Arguments for scroll event function
 
-// Search ---------------------------------------------------------------------------------------
+// Search --------------------------------------------------------------------------------------------------------------------------------------------------
 const searchMedia = async (query, year, type, page) => {
   
   if (main.classList.contains('start')) {
@@ -356,7 +355,7 @@ const searchMedia = async (query, year, type, page) => {
     var req = `t=${type}&q=${query}&y=${year}&p=${page}`;
   }
 
-  let response = await fetch(`https://kz.srrlab.ru/search/?${req}`);
+  let response = await fetch(`https://rutmdb.ru/fetch/search/?${req}`);
   const data = await response.json();
 
   if (!page) { main.innerHTML = ''; main.style = null; } else if (document.getElementById('load-more')) { main.removeChild(document.getElementById('load-more')); }
@@ -365,6 +364,23 @@ const searchMedia = async (query, year, type, page) => {
 
   if (data.page == 'error') { main.innerHTML = `Ошибка PHP cURL запроса: ${data.error}`; return; }
   if (data.results.length == 0) { load.nothingFound().then((cont) => { main.innerHTML = ''; main.append(cont); return; } )}
+  if (data.results.length == 1) {  
+    load.clearSearch();
+    switch (type) {
+      case 'movie': 
+        showMovie(data.results[0].id).catch( (error) => main.innerHTML = `${error}`);
+        history.replaceState( { type: 'movie', id: data.results[0].id}, '', '/movie#' + data.results[0].id ); return;
+        break;
+      case 'tv': 
+        showTv(data.results[0].id).catch( (error) => main.innerHTML = `${error}`);
+        history.replaceState( { type: 'tv', id: data.results[0].id}, '', '/tv#' + data.results[0].id ); return;
+        break;
+      case 'person': 
+        showPerson(data.results[0].id).catch( (error) => main.innerHTML = `${error}`);
+        history.replaceState( { type: 'person', id: data.results[0].id}, '', '/person#' + data.results[0].id ); return;
+        break;
+    }
+  }
 
   let tiles = await Promise.all(data.results.map( async (movie) => {
     let tile = document.createElement('div'); 
@@ -400,8 +416,139 @@ const searchMedia = async (query, year, type, page) => {
   }
 }
 
-// Discover ------------------------------------------------------------------------------------
-// Movie lists
+// Discover -----------------------------------------------------------------------------------------------------------------------------------------------
+
+// Discover filters ----------------------
+const filters = async (type) => {
+  let cont = load.div('filters no-select');
+
+  //sort
+  let sortCont = load.div('sort-container');
+  let sort = document.createElement('select'); 
+    sort.id = 'filters-sort';
+    sort.onchange = () => btn.classList.add('ready');
+
+  let options = {
+    'popularity': 'по популярности',
+    'revenue': 'по сборам', 
+    'primary_release_date': 'по дате выхода', 
+    'original_title': 'по оригинальному названию', 
+    'vote_average': 'по рейтингу', 
+    'vote_count': 'по количеству голосов'
+  }
+
+  Object.entries(options).forEach(([key, value]) => {
+    let option = document.createElement('option'); option.value = key; option.innerHTML = value; sort.append(option);
+  });
+
+  let order = document.createElement('select'); order.id = 'filters-order';
+  let desc = document.createElement('option'); desc.value = 'desc'; desc.innerHTML = 'по убыванию'; order.append(desc);
+    let asc = document.createElement('option'); asc.value = 'asc'; asc.innerHTML = 'по возрастанию'; order.append(asc);
+    order.onchange = () => btn.classList.add('ready');
+  
+  sortCont.append(sort, order);
+
+  // rating
+  let ratingCont = load.div('rating-container');
+  let minRating = document.createElement('input');
+    minRating.type = 'number';
+    minRating.id = 'min-rating';
+    minRating.name = 'min_rating';
+    minRating.placeholder = '0';
+    minRating.min = 0; minRating.max = 10;
+    minRating.onchange = () => btn.classList.add('ready');
+  let minRatingLabel = document.createElement('label');
+    minRatingLabel.for = 'min-rating';
+    minRatingLabel.innerHTML = 'от';
+  
+  let maxRating = document.createElement('input');
+    maxRating.type = 'number';
+    maxRating.id = 'max-rating';
+    maxRating.name = 'max_rating';
+    maxRating.placeholder = '10';
+    maxRating.min = 0; maxRating.max = 10;
+    maxRating.onchange = () => btn.classList.add('ready');
+  let maxRatingLabel = document.createElement('label');
+    maxRatingLabel.for = 'max-rating';
+    maxRatingLabel.innerHTML = 'до';
+    
+  ratingCont.append(minRatingLabel, minRating, maxRatingLabel, maxRating); 
+
+  // votes
+  let votesCont = load.div('votes-container');
+  let minVotes = document.createElement('input');
+    minVotes.type = 'number';
+    minVotes.id = 'min-votes';
+    minVotes.name = 'min_votes';
+    minVotes.placeholder = '0';
+    minVotes.min = 0; minVotes.max = 100000;
+    minVotes.onchange = () => btn.classList.add('ready');
+  let minVotesLabel = document.createElement('label');
+    minVotesLabel.for = 'min-votes';
+    minVotesLabel.innerHTML = 'от';
+  
+  let maxVotes = document.createElement('input');
+    maxVotes.type = 'number';
+    maxVotes.id = 'max-votes';
+    maxVotes.name = 'max_votes';
+    maxVotes.placeholder = '40000';
+    maxVotes.min = 0; maxVotes.max = 99999;
+    maxVotes.onchange = () => btn.classList.add('ready');
+  let maxVotesLabel = document.createElement('label');
+    maxVotesLabel.for = 'max-votes';
+    maxVotesLabel.innerHTML = 'до';
+  
+  votesCont.append(minVotesLabel, minVotes, maxVotesLabel, maxVotes);
+
+  // year 
+  let yearCont = load.div('year-container');
+  let minYear = document.createElement('input');
+    minYear.type = 'date';
+    minYear.id = 'min-year';
+    minYear.name = 'min_year';
+    minYear.required = true;
+    minYear.onchange = () => {btn.classList.add('ready');}
+  let minYearLabel = document.createElement('label');
+    minYearLabel.for = 'min-year';
+    minYearLabel.innerHTML = ' с';
+  
+  let maxYear = document.createElement('input');
+    maxYear.type = 'date';
+    maxYear.id = 'max-year';
+    maxYear.name = 'max_year';
+    maxYear.required = true;
+    maxYear.onchange = () => btn.classList.add('ready');
+  let maxYearLabel = document.createElement('label');
+    maxYearLabel.for = 'max-year';
+    maxYearLabel.innerHTML = 'по';
+  
+  yearCont.append(minYearLabel, minYear, maxYearLabel, maxYear);
+   
+  // submit btn
+  let btn = load.div('', 'filters-submit-btn');
+  btn.innerHTML = 'Подобрать';
+  btn.onclick = () => {
+    document.getElementById('menu').click();
+    discover('discover', type);
+    btn.classList.remove('ready');
+    history.pushState( { 
+      type: type,
+      sort: sort.value, 
+      order: order.value,
+      minRating: minRating.value,
+      maxRating: maxRating.value,
+      minVotes: minVotes.value,
+      maxVotes: maxVotes.value,
+      minYear: minYear.value,
+      maxYear: maxYear.value
+    }, '', '/' + type + '?discover');
+  }
+
+  ([sortCont, ratingCont, votesCont, yearCont, btn]).map( (el) => cont.append(el));
+  return cont;
+}
+
+// Movie lists ----------------------
 const movieMenuList = async () => {
   let cont = document.getElementById('nav-menu-list');
   cont.innerHTML = '';
@@ -409,9 +556,9 @@ const movieMenuList = async () => {
   let topRated = load.text('Топ фильмов', '', 'top_rated');
   let popular = load.text('Популярные', '', 'popular');
   let upcoming = load.text('Новинки', '', 'upcoming');
-  let filters = load.filters('movie');
+  let filter = filters('movie');
 
-  (await Promise.all([title, topRated, popular, upcoming, filters])).map(el => cont.append(el));
+  (await Promise.all([title, topRated, popular, upcoming, filter])).map(el => cont.append(el));
 
   let closeBtn = await load.text('close', 'list-close-btn material-symbols-rounded');
   closeBtn.onclick = () => document.getElementById('menu').click();
@@ -427,7 +574,7 @@ const movieMenuList = async () => {
   });  
 }
 
-// Tv lists
+// Tv lists -------------------------
 const tvMenuList = async () => {
   let cont = document.getElementById('nav-menu-list');
   cont.innerHTML = '';
@@ -436,9 +583,9 @@ const tvMenuList = async () => {
   let topRated = load.text('Топ сериалов', '', 'top_rated');
   let popular = load.text('Популярные', '', 'popular');
   let upcoming = load.text('В этом сезоне', '', 'on_the_air');
-  let filters = load.filters('tv');
+  let filter = filters('tv');
   
-  (await Promise.all([title, topRated, popular, upcoming, filters])).map(el => cont.append(el));  
+  (await Promise.all([title, topRated, popular, upcoming, filter])).map(el => cont.append(el));  
   
   let closeBtn = await load.text('close', 'list-close-btn material-symbols-rounded');
   closeBtn.onclick = () => document.getElementById('menu').click();
@@ -455,7 +602,7 @@ const tvMenuList = async () => {
 
 }
 
-// Person lists
+// Person lists ----------------------
 const personMenuList = async () => {
   let cont = document.getElementById('nav-menu-list');
   cont.innerHTML = '';
@@ -465,7 +612,7 @@ const personMenuList = async () => {
   document.fonts.load("24px Material Symbols Rounded").then( () => cont.append(closeBtn));
 }
 
-// Discover
+// Discover --------------------------
 export const discover = async (a, type, list, page) => {
 
   if (main.classList.contains('start')) {
@@ -502,7 +649,7 @@ export const discover = async (a, type, list, page) => {
     if (a == 'discover') var req = `t=${type}${discover_vars}&page=${page}`;
   }
   
-  let response = await fetch(`https://kz.srrlab.ru/${a}/?${req}`);
+  let response = await fetch(`https://rutmdb.ru/fetch/${a}/?${req}`);
   const data = await response.json();
 
   if (!page) { main.innerHTML = ''; main.style = null; } else if (document.getElementById('load-more')) { main.removeChild(document.getElementById('load-more')); }
@@ -546,7 +693,7 @@ export const discover = async (a, type, list, page) => {
   }
 }
 
-// Load on scroll -------------------------------------------------------------------------------
+// Load on scroll ------------------------------------------------------------------------------------------------------------------------------------------
 function onScroll() {
   let discoverPage = main.classList.contains('discover');
   let searchPage = main.classList.contains('search');
@@ -566,15 +713,32 @@ function onScroll() {
   }
 }
 
-// Movie ----------------------------------------------------------------------------------------
-export const showMovie = async (id) => {
+// Actors starred ------------------------------------------------------------------------------------------------------------------------------------------
+const actor = async (img, name, character, id) => {
+  let cont = document.createElement('div'); cont.setAttribute('class', 'movie-actor');
+
+  let i = load.image(img, 'movie-actor-img');
+  let n = load.text(name, 'movie-actor-name');
+  let c = load.text(character, 'movie-actor-character');
+
+  (await Promise.all([i, n, c])).map( el => cont.append(el));
+
+  cont.onclick = () => {
+    showPerson(id);
+    history.pushState( { type: 'person', id: id}, '', '/person#' + id );
+  }
+  return cont;
+}
+
+// Movie ---------------------------------------------------------------------------------------------------------------------------------------------------
+const showMovie = async (id) => {
   if (main.classList.contains('start')) {
     main.classList.remove('start');
     main.innerHTML = '';
   }
   load.fetchAnimation(); main.style.overflow = 'hidden';
 
-  const response = await fetch(`https://kz.srrlab.ru/movie/?id=${id}`);
+  const response = await fetch(`https://rutmdb.ru/fetch/movie/?id=${id}`);
 
   const movie = await response.json();
   if (movie.id == 'error') { main.innerHTML = `Ошибка PHP cURL запроса: ${movie.error}`; return; }
@@ -633,7 +797,7 @@ export const showMovie = async (id) => {
   for (let i = 0; i < movie.credits.cast.length; i++) {
     if (movie.credits.cast[i].profile_path) {
       actorQtt ++;
-      load.actor(movie.credits.cast[i].profile_path, movie.credits.cast[i].name, movie.credits.cast[i].character, movie.credits.cast[i].id)
+      actor(movie.credits.cast[i].profile_path, movie.credits.cast[i].name, movie.credits.cast[i].character, movie.credits.cast[i].id)
         .then( tile => { if (tile) actorsContainer.append(tile)});
     }
     if (i == 20) break;
@@ -668,7 +832,7 @@ export const showMovie = async (id) => {
   }
     
   if (movie.belongs_to_collection) {
-    const response = await fetch(`https://kz.srrlab.ru/collection/?id=${movie.belongs_to_collection.id}`);
+    const response = await fetch(`https://rutmdb.ru/fetch/collection/?id=${movie.belongs_to_collection.id}`);
     const collection = await response.json();
 
     let sortByDate = (content) => {
@@ -742,15 +906,15 @@ export const showMovie = async (id) => {
   }
 }
 
-// TV -------------------------------------------------------------------------------------------
-export const showTv = async (id) => {
+// TV ------------------------------------------------------------------------------------------------------------------------------------------------------
+const showTv = async (id) => {
   if (main.classList.contains('start')) {
     main.classList.remove('start');
     main.innerHTML = '';
   }
   load.fetchAnimation(); main.style.overflow = 'hidden';
 
-  const response = await fetch(`https://kz.srrlab.ru/tv/?id=${id}`);
+  const response = await fetch(`https://rutmdb.ru/fetch/tv/?id=${id}`);
   const tv = await response.json();
   if (tv.id == 'error') { main.innerHTML = `Ошибка PHP cURL запроса: ${tv.error}`; return; }
 
@@ -784,7 +948,7 @@ export const showTv = async (id) => {
   // TV seasons
   let seasons = document.createElement('div'); seasons.setAttribute('class', 'tv-seasons');
   let specials; if (tv.seasons[0].name.includes('Спецматериалы')) specials = tv.seasons.shift(); // special episodes are useless I think, so I'm not gonna use it
-  let seasonsTiles = await Promise.all(tv.seasons.map( (season) => load.seasonTile(tv.id, season, tv.poster_path)));
+  let seasonsTiles = await Promise.all(tv.seasons.map( (season) => seasonTile(tv.id, season, tv.poster_path)));
   seasonsTiles.map( (el) => seasons.append(el) );
 
   // Produsers
@@ -804,9 +968,31 @@ export const showTv = async (id) => {
     execProducerContainer.append(execProducerContainerSub);
     crew.append(execProducerContainer); 
   }
+
+  let videos = load.mediaVideos(tv.videos);
+
+  let actors = document.createElement('div'); actors.setAttribute('class', 'tv-actors');
+  let actorsContainer = document.createElement('div');
+  actorsContainer.setAttribute('class', 'tv-actors-container');
+  actorsContainer.addEventListener("wheel", (evt) => {
+    evt.preventDefault();
+    actorsContainer.scrollLeft += evt.deltaY;
+  });
+  actors.append(actorsContainer);
+
+  var actorQtt = 0;
+  for (let i = 0; i < tv.credits.cast.length; i++) {
+    if (tv.credits.cast[i].profile_path) {
+      actorQtt ++;
+      actor(tv.credits.cast[i].profile_path, tv.credits.cast[i].name, tv.credits.cast[i].character, tv.credits.cast[i].id)
+        .then( tile => { if (tile) actorsContainer.append(tile)});
+    }
+    if (i == 20) break;
+  }
+  actorsContainer.style.gridTemplateColumns = 'repeat(' + actorQtt + ', 100px)';
    
   let content = await Promise.all([style, poster, backdrop, backdropOverlay, titles, genres, tagline, overview, status, firstAir, lastAir,
-                      voteTile, voteAverage, voteCount, studio, crew, seasons]);
+                      voteTile, voteAverage, voteCount, studio, crew, seasons, actors, videos]);
 
   main.innerHTML = '';
   main.style = null;
@@ -848,15 +1034,82 @@ export const showTv = async (id) => {
   }
 }
 
-// Person ---------------------------------------------------------------------------------------
-export const showPerson = async (id) => {
+// TV season tiles and overlay with episodes ---------------------------------------------------------------------------------------------------------------
+const seasonTile = async (tv_id, season, main_poster) => {
+  let tileContainer = load.div('tv-season-contaner');
+  let tile = load.div('tv-season');
+
+  let poster;
+  if (season.poster_path) {
+    poster = load.image(season.poster_path, 'tv-season-poster');
+  } else {
+    poster = load.image(main_poster, 'tv-season-no-poster');
+  }
+
+  let seasonNumber = load.text(`${season.season_number}`, 'tv-season-number');
+  let title = load.text(season.name, 'tv-season-name'); 
+
+  let episodeCount = load.text(`Серий ${season.episode_count}`, 'tv-season-episode-count');
+  let tileOverlay = load.div('tv-season-overlay');
+
+  tileOverlay.onclick = async () => {
+    if (tile.classList.contains('episodes')) return;
+
+    document.querySelector('header').style.top = '-85px';
+    tile.classList.add('episodes');
+    tile.style.top = `${document.querySelector('main').scrollTop + 25}px`;
+    document.querySelector('main').style.overflow = 'hidden';
+    let overview; if (season.overview) overview = await load.text(season.overview, 'tv-season-overview');
+    let closeBtn = await load.text('close', 'tv-season-close-btn material-symbols-rounded'); 
+    tile.append(closeBtn);
+    closeBtn.onclick = () => {
+      tile.removeChild(episodes);
+      tile.classList.remove('episodes');
+      document.querySelector('main').style = null;
+      tile.style = null;
+      closeBtn.remove();
+    }
+
+    let episodes = load.div('no-select', 'tv-episodes-container'); 
+    if (overview) episodes.append(overview);
+    tile.append(episodes);
+
+    let cpi = new Image(48, 48); cpi.src = 'IMG/cpi.svg'; 
+    cpi.classList.add('tv-episodes-loading');
+    episodes.append(cpi); setTimeout(() => cpi.style.opacity = 1, 200);
+
+    const response = await fetch(`https://rutmdb.ru/fetch/tv/season/?id=${tv_id}&n=${season.season_number}`);
+    const seasonEpisodes = await response.json();
+
+    let episodeTiles = await Promise.all(seasonEpisodes.episodes.map( async (episode) => {
+      let episodeTile = load.div('tv-episode');
+        let still = load.image(episode.still_path, 'tv-episode-still');
+        let number = load.text(`Серия ${episode.episode_number}`, 'tv-episode-number');
+        let title = load.text(episode.name, 'tv-episode-title');
+        let overview = load.text(episode.overview, 'tv-episode-overview');
+        let onAir = load.date(episode.air_date, 'tv-episode-air-date');
+      (await Promise.all([still, number, title, overview, onAir])).map((el) => { if (el) episodeTile.append(el) } );
+      return episodeTile;
+    }));
+  
+    cpi.style.opacity = 0; setTimeout(() => cpi.remove(), 200);
+    setTimeout(() => episodeTiles.map( (el) => { episodes.append(el); setTimeout(() => el.style.opacity = 1, 200) }), 200);
+  }
+
+  (await Promise.all([poster, seasonNumber, title, episodeCount, tileOverlay])).map((el) => { if (el) tile.append(el) } );
+  tileContainer.append(tile);
+  return tileContainer;
+}
+
+// Person --------------------------------------------------------------------------------------------------------------------------------------------------
+const showPerson = async (id) => {
   if (main.classList.contains('start')) {
     main.classList.remove('start');
     main.innerHTML = '';
   }
   load.fetchAnimation(); main.style.overflow = 'hidden';
 
-  const response = await fetch(`https://kz.srrlab.ru/person/?id=${id}`);
+  const response = await fetch(`https://rutmdb.ru/fetch/person/?id=${id}`);
   const person = await response.json();
   if (person.id == 'error') { main.innerHTML = `Ошибка PHP cURL запроса: ${person.error}`; return; }
 
@@ -917,7 +1170,7 @@ export const showPerson = async (id) => {
   content.map((el) => { if (el) main.append(el) });
 }
 
-// Start page -----------------------------------------------------------------------------------
+// Start page ----------------------------------------------------------------------------------------------------------------------------------------------
 const startPageContainer = async (type) => {
 
   switch (type) {
@@ -971,7 +1224,7 @@ const startPageContainer = async (type) => {
     }
   }
 
-  let responsePopular = await fetch(`https://kz.srrlab.ru/list/?t=${type}&l=popular`);
+  let responsePopular = await fetch(`https://rutmdb.ru/fetch/list/?t=${type}&l=popular`);
   const popular = await responsePopular.json();
 
   let tilesPopular = await Promise.all(popular.results.map( async (movie) => {
@@ -991,7 +1244,7 @@ const startPageContainer = async (type) => {
 
   if (type != 'person') { // Person category contains one list only -------------------------------
   
-  let responseTop = await fetch(`https://kz.srrlab.ru/list/?t=${type}&l=top_rated`);
+  let responseTop = await fetch(`https://rutmdb.ru/fetch/list/?t=${type}&l=top_rated`);
   const top = await responseTop.json();
 
   let tilesTop = await Promise.all(top.results.map( async (movie) => {
@@ -1032,7 +1285,7 @@ const startPageContainer = async (type) => {
 
 }
 
-const startPage = async () => {  
+const startPage = async () => {
   header.style = null;
   main.innerHTML = ''; main.setAttribute('class', 'start'); main.removeEventListener('scroll', onScroll, false);
   let titleOverlay = load.div('start-title-overlay');
@@ -1044,11 +1297,103 @@ const startPage = async () => {
     (await Promise.all([title, subTitle, tmdbLogo])).map(el => titleContainer.append(el));
   
   let startContainer = document.createElement('div'); startContainer.id = 'start-container';
-
-  [titleContainer, titleOverlay, startContainer].map(el => main.append(el));
+  [titleOverlay, startContainer].map(el => main.append(el));
+  document.fonts.load("24px Roboto Flex").then(() => main.append(titleContainer));
 }
 
-// Browser history
+// About overlay -------------------------------------------------------------------------------------------------------------------------------------------
+const about = () => {
+  let main = document.querySelector('main');
+  if (main.style.overflow == 'hidden') return;
+
+  main.style.overflow = 'hidden';
+  let container = document.createElement('div');
+    container.id = 'about-container';
+    container.style.top = main.scrollTop + 'px';
+    
+  let closeBtn = document.createElement('div');
+    closeBtn.classList.add('about-close-btn', 'material-symbols-rounded');
+    document.fonts.load("24px Material Symbols Rounded").then( () => closeBtn.innerText = 'close' );
+    closeBtn.onclick = () => {
+      container.style.opacity = 0;
+      setTimeout( () => main.removeChild(container), 200);
+      main.style = null;
+    }
+    container.append(closeBtn);
+
+  let selectCategory = document.createElement('div'); selectCategory.classList.add('about-select');
+    let ar1 = document.createElement('div'); ar1.innerText = 'west'; ar1.classList.add('material-symbols-rounded');
+    let ar2 = document.createElement('div'); ar2.innerText = 'west'; ar2.classList.add('material-symbols-rounded');
+    let ar3 = document.createElement('div'); ar3.innerText = 'west'; ar3.classList.add('material-symbols-rounded');
+    document.fonts.load("24px Material Symbols Rounded").then( () => selectCategory.append(ar1, ar2, ar3) );
+
+    let title = document.createElement('div'); title.innerText = 'Выберете категорию';
+      let subtitle = document.createElement('span'); subtitle.innerText = 'от этого будет зависеть поиск';
+      let descr = document.createElement('span'); descr.innerText = 
+      'Если в стоке поиска есть запрос, то смена категории приведет к новому поиску по этому запросу. Если строка поиска пуста - откроется стартовая страница категории.';
+      title.append(subtitle, descr);
+    selectCategory.append(title);
+    container.append(selectCategory);
+
+  let votesInfo = document.createElement('div'); votesInfo.classList.add('about-votes');
+    let hightVotes = document.createElement('div'); hightVotes.innerText = 'Цветной цветовой индикатор вокруг рейтинга означает, что количество проголосовавших за него превышает 100 человек и как следсвие данный рейтинг дает более объективную оценку произведению.'; votesInfo.append(hightVotes);
+    let lowVotes = document.createElement('div'); lowVotes.innerText = 'Если же цветовая шкала серая, то проголосовавших меньше 100, а может даже всего один человек. В этом случае к рейтингу стоит относиться скептически.'; votesInfo.append(lowVotes);
+    load.votesCircle(7.2, 44, 50, 'about-hight-votes', 1000).then(el => votesInfo.append(el));
+    load.votesCircle(9.6, 44, 50, 'about-low-votes', 1).then(el => votesInfo.append(el));
+    container.append(votesInfo);
+
+  let license = document.createElement('div'); license.classList.add('about-tmdb');
+    let tmdbLogo = new Image(80, 80); tmdbLogo.src = 'IMG/tmdb_logo.svg';
+    let tmdbLicense = document.createElement('div'); tmdbLicense.classList.add('about-tmdb-license');
+      tmdbLicense.innerText = 'Это приложение использует TMDB API, но не одобрено и не сертифицировано TMDB.\nThis product uses the TMDB API but is not endorsed or certified by TMDB.';
+    let licenseInfo = document.createElement('div'); licenseInfo.classList.add('about-license-info');
+      licenseInfo.innerText = 'Данное приложение использует материалы предоставляемые TMDB и на все материалы распространяются условия использования расположенные по ';
+      let licenseLink = document.createElement('a'); licenseLink.href = 'https://www.themoviedb.org/terms-of-use'; licenseLink.innerText = 'ссылке'; licenseInfo.append(licenseLink);
+    license.append(tmdbLogo, tmdbLicense, licenseInfo); container.append(license);
+
+  let searchInfo = document.createElement('div'); searchInfo.classList.add('about-search-info');
+    let img = new Image(660); img.src = 'IMG/search_field.svg'; img.classList.add('about-search-field');
+    let infoSearchBtn = document.createElement('div'); infoSearchBtn.innerText = 'Начать поиск';
+    let infoInputField = document.createElement('div'); infoInputField.innerText = 'Текст поиска';
+    let infoYearField = document.createElement('div'); infoYearField.innerText = 'Год выхода в прокат (не обязательно)';
+    let infoCloseBtn = document.createElement('div'); infoCloseBtn.innerText = 'Очистить поле поиска';
+
+    searchInfo.append(img, infoSearchBtn, infoInputField, infoYearField, infoCloseBtn);
+    container.append(searchInfo);
+    
+  let footer = document.createElement('div'); footer.classList.add('about-made-by');
+  let madeBy = document.createElement('div');
+    madeBy.classList.add('about-made-by-title'); 
+    madeBy.innerHTML = `Дизайн и разработка `;
+    let madeBySpan = document.createElement('a'); 
+        madeBySpan.classList.add('about-made-by-title-link'); 
+        madeBySpan.innerHTML = 'rus-sharafiev';
+        madeBySpan.href = 'https://github.com/rus-sharafiev'; 
+        madeBySpan.target = "_blank";
+    madeBy.append(madeBySpan);
+
+  let cert = document.createElement('div'); cert.classList.add('about-cert');
+    cert.innerText = 'RU · TMDB © 2022';
+    
+  let sourceCodeLogo = document.createElementNS("http://www.w3.org/2000/svg", "svg"); sourceCodeLogo.setAttribute('viewBox', '0 0 32.58 31.77');
+    const path = document.createElementNS("http://www.w3.org/2000/svg", 'path');
+    path.setAttribute('d','M16.29,0a16.29,16.29,0,0,0-5.15,31.75c.82.15,1.11-.36,1.11-.79s0-1.41,0-2.77C7.7,29.18,6.74,26,6.74,26a4.36,4.36,0,0,0-1.81-2.39c-1.47-1,.12-1,.12-1a3.43,3.43,0,0,1,2.49,1.68,3.48,3.48,0,0,0,4.74,1.36,3.46,3.46,0,0,1,1-2.18c-3.62-.41-7.42-1.81-7.42-8a6.3,6.3,0,0,1,1.67-4.37,5.94,5.94,0,0,1,.16-4.31s1.37-.44,4.48,1.67a15.41,15.41,0,0,1,8.16,0c3.11-2.11,4.47-1.67,4.47-1.67A5.91,5.91,0,0,1,25,11.07a6.3,6.3,0,0,1,1.67,4.37c0,6.26-3.81,7.63-7.44,8a3.85,3.85,0,0,1,1.11,3c0,2.18,0,3.94,0,4.47s.29.94,1.12.78A16.29,16.29,0,0,0,16.29,0Z'); 
+    sourceCodeLogo.append(path);
+  let sourceCode = document.createElement('a'); 
+    sourceCode.classList.add('about-made-by-source'); 
+    sourceCode.innerHTML = '&lt; / Исходный код &gt;'; 
+    sourceCode.href = 'https://github.com/rus-sharafiev/tmdb';
+    sourceCode.target = "_blank";
+    sourceCode.append(sourceCodeLogo);
+
+    footer.append(sourceCode, cert, madeBy);
+    container.append(footer);
+  
+  main.append(container);
+  setTimeout( () => container.style.opacity = 1, 200);
+}
+
+// Browser history -----------------------------------------------------------------------------------------------------------------------------------------
 window.onpopstate = () => {
   switch (history.state.type) {
     case 'movie':

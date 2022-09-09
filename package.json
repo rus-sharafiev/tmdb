@@ -1,0 +1,27 @@
+{
+  "name": "ru_tmdb",
+  "version": "1.0.0",
+  "description": "PWA for The Movie Database in russian",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rus-sharafiev/tmdb.git"
+  },
+  "keywords": [
+    "TMDB",
+    "movies",
+    "tvs"
+  ],
+  "author": "Rus Sharafiev",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rus-sharafiev/tmdb/issues"
+  },
+  "homepage": "https://github.com/rus-sharafiev/tmdb#readme",
+  "devDependencies": {
+    "workbox-cli": "^6.5.4"
+  }
+}

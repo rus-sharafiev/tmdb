@@ -23,7 +23,7 @@
                     0px 2px 6px 2px rgba(0 0 0 / 15%);
 
         display: grid;
-        grid: 10px 15px 10px 40px 10px / 10px 1fr 40px 10px;
+        grid: 10px 15px 10px 40px 10px / 10px 2fr 1fr 10px;
     }
     header > .logo, 
     header > .logo-overlay {
@@ -223,7 +223,7 @@
         width: 100vw;
         border-radius: 0;
         margin: 0;
-        padding: 60px 0 80px;
+        padding: 70px 0 80px;
     }
     .search, 
     .discover {
@@ -238,7 +238,7 @@
     /* Start page ---------------------------------------------------- */
     main.start {
         display: grid;
-        grid: 80px 770px / 1fr;
+        grid: 70px 770px / 1fr;
     }
     .start-popular, .start-top {
         padding: 5px;
@@ -256,7 +256,7 @@
         margin: -85px 0 0 0;
         background: linear-gradient(to bottom, 
                 var(--md-sys-color-primary), 
-                rgba(var(--md-sys-color-primary--rgb), 0.95)), 
+                rgba(var(--md-sys-color-primary--rgb), 0.85)), 
                 url(/IMG/start_background.png);
         background-position: right;
         background-size: contain;
@@ -289,9 +289,6 @@
         position: absolute;
         transition: unset;
     }
-    /* main.start + header > form > input#query {
-        width: calc(100vw - 20px);
-    } */
     #start-container {
         display: grid;
         grid: 40px 345px 40px 345px / 1fr;
@@ -331,7 +328,7 @@
     /* Movie and TV pages -------------------------------------------- */
     .movie {
         display: grid;
-        grid: 30px 310px repeat(11, min-content) /
+        grid: 60px 310px repeat(11, min-content) /
         5px 1fr 5px;
         grid-template-areas:
             '. ...... .'
@@ -352,7 +349,7 @@
     }
     .tv {
         display: grid;
-        grid: 30px 310px repeat(8, min-content) /
+        grid: 60px 310px repeat(8, min-content) /
         5px 1fr 5px;
         grid-template-areas:
             '. ...... .'
@@ -364,12 +361,12 @@
             '. first .'
             '. last .'
             '. status .'
-            '. crew .';
+            '. crew .'
+            '. .... .'
+            '. actors .'
+            '. videos .';
         color: var(--md-sys-color-on-surface);
         gap: 10px 5px;
-    }
-    main.movie > div:nth-child(n+13) {
-        margin: -10px 0 0;
     }
     .movie-poster,
     .tv-poster {
@@ -402,23 +399,24 @@
     .tv-votes {
         grid-column: 2 / 3;
         grid-row: 2 / 3;
-        margin: 110px 0 0 220px;
+        margin: 80px 0 0 220px;
     }
-    .movie-votes-title,
+    .movie-votes-title, 
     .tv-votes-title {
         grid-column: 2 / 3;
         grid-row: 2 / 3;
         width: 100px;
-        margin: 215px 0 0 225px !important;
+        margin: 185px 0 0 225px !important;
         align-self: start;
         font-size: 10px;
         line-height: 0.8;
+        color: rgba(var(--md-sys-color-outline--rgb), 0.5);
     }
     .movie-vote-count, 
     .tv-vote-count {
         grid-column: 2 / 3;
         grid-row: 2 / 3;
-        margin: 240px 0 0 225px !important;
+        margin: 205px 0 0 225px !important;
         align-self: start;
         font-size: 14px;
         color: var(--md-sys-color-on-surface-variant);
@@ -438,6 +436,8 @@
     .movie-actors,
     .tv-actors {
         grid-column: 1 / -1;
+        
+        margin: -10px 0 0;
         width: 100vw;
         border-top: 1px solid rgba(var(--md-sys-color-primary--rgb), 0.1);
         border-radius: 0;
@@ -446,6 +446,7 @@
     .videos-container {
         grid-column: 1 / -1;
 
+        margin: -10px 0 0;
         height: calc((100vw - 20px) / 16 * 9 + 90px);
         width: 100vw;
         border-top: 1px solid rgba(var(--md-sys-color-primary--rgb), 0.1);
@@ -464,6 +465,7 @@
         grid-column: 1 / -1;
         grid-row: unset;
         
+        margin: -10px 0 0;
         width: 100vw;
         height: min-content;
         border-top: 1px solid rgba(var(--md-sys-color-primary--rgb), 0.1);
@@ -490,6 +492,7 @@
         grid-column: 1 / -1;
         grid-row: unset;
         
+        margin: -10px 0 0;
         width: 100vw;
         min-width: 100vw;
         height: min-content;
@@ -511,7 +514,7 @@
         top: 20px;
     }
     .about-close-btn {
-        top: 90px;
+        top: 100px;
     }
     .tv-studio {
         display: none;
@@ -625,7 +628,7 @@
     /* About --------------------------------------------------------- */
     #about-container {
         overflow: overlay;
-        padding: 130px 10px 100px;
+        padding: 140px 10px 100px;
         display: grid;
         grid: repeat(4, min-content) / 1fr;
         grid-template-areas: 

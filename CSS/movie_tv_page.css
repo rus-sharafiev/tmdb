@@ -22,6 +22,7 @@
         '. videos . crew crew .'
         '. videos . actors actors .'
         '. ...... . ...... ...... .'
+        '. ...... . ...... ...... .'
         '. ...... . ...... ...... .';
     align-items: start;
     justify-content: start;
@@ -258,7 +259,7 @@
 /* TV page -------------------------------------------------------------------------------------- */
 .tv {
     display: grid;
-    grid:   5px 20px 60px 23px 10px 23px 135px 20px 23px 23px 23px 23px 77px 35px 40px 40px min-content min-content 5px /
+    grid:   5px 20px 60px 23px 10px 23px 135px 20px 23px 23px 23px 23px 77px 35px 40px 40px min-content 40px 275px min-content 5px /
             minmax(10px, 1fr) 400px 10px minmax(290px, 4fr) minmax(290px, 4fr) minmax(10px, 1fr);
     grid-template-areas:
         '. ...... . ..... ..... .'
@@ -276,7 +277,9 @@
         '. poster . status status .'
         '. poster . ....... ..... .'
         '. ...... . crew crew .'
-        '. videos . crew crew .'
+        '. ...... . crew crew .'
+        '. ...... . ...... ...... .'
+        '. videos . ...... ...... .'
         '. videos . actors actors .'
         '. ...... . ...... ...... .'
         '. ...... . ...... ...... .';
@@ -614,7 +617,7 @@
     grid: 30px 305px / 1fr;
 
     opacity: 0;
-    transition: opacity 0.2s ease-in;
+    transition: all 0.2s ease-in;
 }
 .movie-suggested::before,
 .tv-suggested::before {
